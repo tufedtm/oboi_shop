@@ -1,7 +1,19 @@
 from django.db import models
 
 
+class Brand(models.Model):
+    name = models.CharField('Бренд', max_length=100)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Бренд'
+        verbose_name_plural = 'Бренды'
+
+
 class VendorCode(models.Model):
+    brand = models.ForeignKey(Brand)
     vendor_code = models.CharField('Артикул', max_length=20, unique=True)
     width = models.FloatField('Ширина (м)', default=1.06)
     length = models.FloatField('Длина (м)', default=10)
@@ -16,12 +28,13 @@ class VendorCode(models.Model):
 
 class TheConsignment(models.Model):
     STILLAGES = ((x, x) for x in range(1, 11))
+    CELLS = ((x, x) for x in range(1, 21))
 
     vendor_code = models.ForeignKey(VendorCode, verbose_name='Артикул')
     the_consignment = models.CharField('Партия', max_length=20, null=True, blank=True)
     count = models.PositiveSmallIntegerField('Количество рулонов')
-    stillage = models.PositiveSmallIntegerField('Стеллаж', choices=STILLAGES, default=10, null=True, blank=True)
-    cell = models.PositiveSmallIntegerField('Ячейка', null=True, blank=True, default=7)
+    stillage = models.PositiveSmallIntegerField('Стеллаж', choices=STILLAGES, null=True, blank=True)
+    cell = models.PositiveSmallIntegerField('Ячейка', choices=CELLS, null=True, blank=True)
 
     def __str__(self):
         if self.stillage:

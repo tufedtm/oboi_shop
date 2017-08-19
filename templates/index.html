@@ -1,5 +1,6 @@
 <table border="1" cellspacing="0">
     <tr>
+        <th>Бренд</th>
         <th>Артикул</th>
         <th>Партия</th>
         <th>Рулонов</th>
@@ -7,6 +8,7 @@
     </tr>
     {% for object in object_list %}
         <tr>
+            <td>{{ object.vendor_code.brand }}</td>
             <td>{{ object.vendor_code }}</td>
             <td>{{ object.the_consignment }}</td>
             <td align="right">{{ object.count }}</td>

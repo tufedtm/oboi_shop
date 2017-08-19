@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import TheConsignment, VendorCode
+from .models import Brand, TheConsignment, VendorCode
 
 
 class TheConsignmentAdmin(admin.ModelAdmin):
@@ -8,5 +8,6 @@ class TheConsignmentAdmin(admin.ModelAdmin):
     list_display = ('vendor_code', 'the_consignment', 'count', 'stillage', 'cell')
 
 
+admin.site.register(Brand)
 admin.site.register(TheConsignment, TheConsignmentAdmin)
 admin.site.register(VendorCode)
