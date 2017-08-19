@@ -35,6 +35,7 @@ class TheConsignment(models.Model):
     count = models.PositiveSmallIntegerField('Количество рулонов')
     stillage = models.PositiveSmallIntegerField('Стеллаж', choices=STILLAGES, null=True, blank=True)
     cell = models.PositiveSmallIntegerField('Ячейка', choices=CELLS, null=True, blank=True)
+    showcase = models.BooleanField('На витрине?')
 
     def __str__(self):
         if self.stillage:

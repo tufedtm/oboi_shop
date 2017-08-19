@@ -5,7 +5,7 @@ from .models import Brand, TheConsignment, VendorCode
 
 class TheConsignmentAdmin(admin.ModelAdmin):
     raw_id_fields = ('vendor_code',)
-    list_display = ('vendor_code', 'the_consignment', 'count', 'stillage', 'cell')
+    list_display = ('vendor_code', 'the_consignment', 'count', 'stillage', 'cell', 'showcase')
 
 
 admin.site.register(Brand)
