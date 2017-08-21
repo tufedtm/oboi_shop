@@ -2,7 +2,7 @@ from django.db import models
 
 
 class Brand(models.Model):
-    name = models.CharField('Бренд', max_length=100)
+    name = models.CharField('Бренд', max_length=100, unique=True)
 
     def __str__(self):
         return self.name
@@ -13,7 +13,7 @@ class Brand(models.Model):
 
 
 class VendorCode(models.Model):
-    brand = models.ForeignKey(Brand)
+    brand = models.ForeignKey(Brand, null=True, blank=True)
     vendor_code = models.CharField('Артикул', max_length=20, unique=True)
     width = models.FloatField('Ширина (м)', default=1.06)
     length = models.FloatField('Длина (м)', default=10)
@@ -35,7 +35,7 @@ class TheConsignment(models.Model):
     count = models.PositiveSmallIntegerField('Количество рулонов')
     stillage = models.PositiveSmallIntegerField('Стеллаж', choices=STILLAGES, null=True, blank=True)
     cell = models.PositiveSmallIntegerField('Ячейка', choices=CELLS, null=True, blank=True)
-    showcase = models.BooleanField('На витрине?')
+    showcase = models.BooleanField('На витрине?', default=True)
 
     def __str__(self):
         if self.stillage:
