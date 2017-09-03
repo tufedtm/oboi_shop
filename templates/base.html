@@ -1,0 +1,30 @@
+<style>
+    * {
+        font-size: 14px;
+        font-family: monospace;
+    }
+
+    table {
+        border-collapse: collapse;
+    }
+
+    th, td:first-child {
+        padding: 2px;
+        border: 1px solid #000;
+    }
+
+    @media print {
+        a, br {
+            display: none;
+        }
+
+        body {
+            margin: 0;
+        }
+    }
+</style>
+
+<a href="{% url 'index' %}">главная</a>
+<a href="{% url 'remnants_of_goods' %}">остатки</a>
+
+{% block content %}{% endblock %}
