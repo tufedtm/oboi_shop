@@ -25,7 +25,7 @@ class TheConsignmentAdmin(admin.ModelAdmin):
     list_display = ('vendor_code', 'the_consignment', 'count', 'stillage', 'cell', 'showcase')
     # list_editable = ('count', 'stillage', 'cell', 'showcase')
     list_filter = ('showcase', 'vendor_code__width')
-    # ordering = ('vendor_code__width', 'vendor_code__vendor_code', 'the_consignment')
+    ordering = ('vendor_code__width', 'vendor_code__vendor_code', 'the_consignment')
 
 
 class SellingInline(admin.TabularInline):

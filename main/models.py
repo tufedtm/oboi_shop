@@ -4,11 +4,12 @@ from django.db import models
 def update_the_consignment(the_consignment):
     receipts = ReceiptContent.objects.filter(the_consignment=the_consignment)
     sellings = SellingContent.objects.filter(receipt_content__the_consignment=the_consignment)
-    purchase_returns_set = PurchaseReturnsContent.objects.filter(the_consignment=the_consignment)
+    purchase_returns_set = PurchaseReturnsContent.objects.filter(
+        selling_content__receipt_content__the_consignment=the_consignment)
 
     count = 0
     for receipt in receipts:
-        count += receipt.count
+        count += receipt.purchased
     for selling in sellings:
         count -= selling.count
     for purchase_return in purchase_returns_set:
@@ -38,6 +39,7 @@ class Contractor(models.Model):
 
 class Brand(models.Model):
     name = models.CharField('Бренд', max_length=100, unique=True)
+    country_of_origin = models.CharField('Страна производства', max_length=100, null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -48,14 +50,24 @@ class Brand(models.Model):
 
 
 class VendorCode(models.Model):
+    RAPPORT_TYPES = (
+        (1, 'произвольный'),
+        (2, 'прямой'),
+        (3, 'со смещением'),
+        (4, 'обратный'),
+    )
+
     brand = models.ForeignKey(Brand, null=True, blank=True)
     vendor_code = models.CharField('Артикул', max_length=20, unique=True)
     retail_price = models.PositiveIntegerField('Розничная цена', null=True, blank=True)
+    wholesale_price = models.PositiveIntegerField('Оптовая цена', null=True, blank=True)
     width = models.FloatField('Ширина (м)', default=1.06)
     length = models.FloatField('Длина (м)', default=10)
     combination = models.ManyToManyField('self', verbose_name='Комбинации', blank=True)
     discontinued = models.BooleanField('Снят с производства', default=False)
-    pack = models.SmallIntegerField('Количество в упаковке', null=True, blank=True)
+    pack = models.SmallIntegerField('Рулонов в упаковке', null=True, blank=True)
+    rapport = models.PositiveSmallIntegerField('Раппорт (см)', default=0)
+    rapport_type = models.PositiveSmallIntegerField('Тип раппорта', choices=RAPPORT_TYPES, default=1)
 
     def __str__(self):
         return self.vendor_code
@@ -124,6 +136,10 @@ class ReceiptContent(models.Model):
     def __str__(self):
         return '{0} {1}рул — {2}\u20BD'.format(self.the_consignment, self.balance, self.price)
 
+    def delete(self, *args, **kwargs):
+        super(ReceiptContent, self).delete(*args, **kwargs)
+        update_the_consignment(self.the_consignment)
+
     def save(self, *args, **kwargs):
         if not self.pk:
             self.balance = self.purchased
@@ -163,6 +179,10 @@ class SellingContent(models.Model):
     def __str__(self):
         return '{0} - {1}\u20BD'.format(self.selling_order, self.price)
 
+    def delete(self, *args, **kwargs):
+        super(SellingContent, self).delete(*args, **kwargs)
+        update_the_consignment(self.receipt_content.the_consignment)
+
     def save(self, *args, **kwargs):
         if not self.pk:
             self.retail_price = self.receipt_content.the_consignment.vendor_code.retail_price
@@ -192,9 +212,13 @@ class PurchaseReturns(models.Model):
 
 class PurchaseReturnsContent(models.Model):
     purchase_returns = models.ForeignKey(PurchaseReturns)
-    the_consignment = models.ForeignKey(TheConsignment)
+    selling_content = models.ForeignKey(SellingContent)
     count = models.PositiveSmallIntegerField('Количество')
+
+    def delete(self, *args, **kwargs):
+        super(PurchaseReturnsContent, self).delete(*args, **kwargs)
+        update_the_consignment(self.selling_content.receipt_content.the_consignment)
 
     def save(self, *args, **kwargs):
         super(PurchaseReturnsContent, self).save(*args, **kwargs)
-        update_the_consignment(self.the_consignment)
+        update_the_consignment(self.selling_content.receipt_content.the_consignment)
