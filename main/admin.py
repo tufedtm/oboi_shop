@@ -14,9 +14,14 @@ from .models import (
 )
 
 
+class BrandAdmin(admin.ModelAdmin):
+    ordering = ('name', 'country_of_origin')
+
+
 class VendorCodeAdmin(admin.ModelAdmin):
-    list_display = ('vendor_code', 'width')
-    # list_editable = ('retail_price',)
+    list_display = ('vendor_code', 'width', 'retail_price', 'brand', 'rapport', 'rapport_type')
+    list_filter = ('width',)
+    list_editable = ('retail_price', 'brand', 'rapport', 'rapport_type')
     ordering = ('width', 'vendor_code')
 
 
@@ -56,7 +61,7 @@ class PurchaseReturnsAdmin(admin.ModelAdmin):
     inlines = (PurchaseReturnsInline,)
 
 
-admin.site.register(Brand)
+admin.site.register(Brand, BrandAdmin)
 admin.site.register(TheConsignment, TheConsignmentAdmin)
 admin.site.register(VendorCode, VendorCodeAdmin)
 admin.site.register(Contractor)

@@ -3,9 +3,8 @@ from django.db import models
 
 def update_the_consignment(the_consignment):
     receipts = ReceiptContent.objects.filter(the_consignment=the_consignment)
-    sellings = SellingContent.objects.filter(receipt_content__the_consignment=the_consignment)
-    purchase_returns_set = PurchaseReturnsContent.objects.filter(
-        selling_content__receipt_content__the_consignment=the_consignment)
+    sellings = SellingContent.objects.filter(the_consignment=the_consignment)
+    purchase_returns_set = PurchaseReturnsContent.objects.filter(selling_content__the_consignment=the_consignment)
 
     count = 0
     for receipt in receipts:
@@ -38,15 +37,32 @@ class Contractor(models.Model):
 
 
 class Brand(models.Model):
-    name = models.CharField('Бренд', max_length=100, unique=True)
-    country_of_origin = models.CharField('Страна производства', max_length=100, null=True, blank=True)
+    COUNTRIES_OF_ORIGIN = (
+        ('RU', 'Россия'),
+        ('CH', 'Китай'),
+        ('IT', 'Италия'),
+        ('DE', 'Германия'),
+        ('BE', 'Бельгия'),
+        ('KR', 'Корея'),
+        ('UA', 'Украина'),
+        ('TR', 'Турция'),
+        ('TW', 'Тайвань'),
+        ('FR', 'Франция'),
+    )
+
+    name = models.CharField('Бренд', max_length=100, null=True, blank=True)
+    country_of_origin = models.CharField('Страна производства', max_length=100, choices=sorted(COUNTRIES_OF_ORIGIN))
+    company_of_origin = models.CharField('Компания производитель', max_length=100, null=True, blank=True)
 
     def __str__(self):
-        return self.name
+        if self.name:
+            return '{0} ({1})'.format(self.name, self.country_of_origin)
+        return '{0} ({1})'.format(self.company_of_origin, self.country_of_origin)
 
     class Meta:
         verbose_name = 'Бренд'
         verbose_name_plural = 'Бренды'
+        unique_together = ('name', 'country_of_origin')
 
 
 class VendorCode(models.Model):
@@ -171,7 +187,7 @@ class Selling(models.Model):
 
 class SellingContent(models.Model):
     selling_order = models.ForeignKey(Selling)
-    receipt_content = models.ForeignKey(ReceiptContent)
+    the_consignment = models.ForeignKey(TheConsignment)
     count = models.PositiveSmallIntegerField('Количество')
     price = models.PositiveIntegerField('Розничная цена')
     retail_price = models.PositiveIntegerField('Розничная цена', editable=False)
@@ -181,13 +197,13 @@ class SellingContent(models.Model):
 
     def delete(self, *args, **kwargs):
         super(SellingContent, self).delete(*args, **kwargs)
-        update_the_consignment(self.receipt_content.the_consignment)
+        update_the_consignment(self.the_consignment)
 
     def save(self, *args, **kwargs):
         if not self.pk:
-            self.retail_price = self.receipt_content.the_consignment.vendor_code.retail_price
+            self.retail_price = self.the_consignment.vendor_code.retail_price
         super(SellingContent, self).save(*args, **kwargs)
-        update_the_consignment(self.receipt_content.the_consignment)
+        update_the_consignment(self.the_consignment)
 
 
 class PurchaseReturns(models.Model):
@@ -217,8 +233,8 @@ class PurchaseReturnsContent(models.Model):
 
     def delete(self, *args, **kwargs):
         super(PurchaseReturnsContent, self).delete(*args, **kwargs)
-        update_the_consignment(self.selling_content.receipt_content.the_consignment)
+        update_the_consignment(self.selling_content.the_consignment)
 
     def save(self, *args, **kwargs):
         super(PurchaseReturnsContent, self).save(*args, **kwargs)
-        update_the_consignment(self.selling_content.receipt_content.the_consignment)
+        update_the_consignment(self.selling_content.the_consignment)
