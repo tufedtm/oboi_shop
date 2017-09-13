@@ -51,7 +51,7 @@ class Brand(models.Model):
     )
 
     name = models.CharField('Бренд', max_length=100, null=True, blank=True)
-    country_of_origin = models.CharField('Страна производства', max_length=100, choices=sorted(COUNTRIES_OF_ORIGIN))
+    country_of_origin = models.CharField('Страна производства', max_length=2, choices=sorted(COUNTRIES_OF_ORIGIN))
     company_of_origin = models.CharField('Компания производитель', max_length=100, null=True, blank=True)
 
     def __str__(self):
@@ -72,6 +72,50 @@ class VendorCode(models.Model):
         (3, 'со смещением'),
         (4, 'обратный'),
     )
+    MARKING = (
+        ('А', 'Акриловые'),
+        ('Б', 'Бумажные'),
+        ('ВВ', 'Вспененный винил'),
+        ('ПВ', 'Плоский винил'),
+        ('РВ', 'Рельефный винил'),
+        ('СТЛ', 'Стеклообои'),
+        ('СТР', 'Структурные'),
+        ('ТСК', 'Текстильные'),
+    )
+    MOISTURE_RESISTANCES = (
+        ('В-0', 'Влагостойкие при наклеивании'),
+        ('В-1', 'Влагостойкие при эксплуатации'),
+        ('М-1', 'Устойчивые к мытью (моющиеся)'),
+        ('М-2', 'Высокоустойчивые к мытью'),
+        ('М-3', 'Устойчивые к трению'),
+        ('М-4', 'Высокоустойчивые к трению'),
+    )
+    BASIS_MATERIALS = (
+        (1, 'бумага'),
+        (2, 'флизелин'),
+    )
+    COVERING_MATERIAL = (
+        (1, 'бумага'),
+        (2, 'винил'),
+    )
+    RESISTANCE_TO_LIGHT = (
+        (3, 'средняя'),
+        (4, 'удовлетворительная'),
+        (5, 'хорошая'),
+        (6, 'очень хорошая'),
+        (7, 'отличная'),
+    )
+    GLUING = (
+        ('БК', 'Клей наносится на обои'),
+        ('ОК', 'Клей наносится на основу'),
+        ('ГК', 'Полотно наклеиваемые горизонтально'),
+        ('Г', 'Гуммированные обои'),
+    )
+    REMOVAL = (
+        (1, 'Снимаемые без остатка'),
+        (2, 'Расслаиваемые'),
+        (3, 'Увлажняемые для снятия'),
+    )
 
     brand = models.ForeignKey(Brand, null=True, blank=True)
     vendor_code = models.CharField('Артикул', max_length=20, unique=True)
@@ -84,6 +128,13 @@ class VendorCode(models.Model):
     pack = models.SmallIntegerField('Рулонов в упаковке', null=True, blank=True)
     rapport = models.PositiveSmallIntegerField('Раппорт (см)', default=0)
     rapport_type = models.PositiveSmallIntegerField('Тип раппорта', choices=RAPPORT_TYPES, default=1)
+    marking = models.CharField('Маркировка', max_length=3, choices=MARKING, null=True, blank=True)
+    moisture_resistance = models.CharField('Влагостойкость', max_length=3, choices=MOISTURE_RESISTANCES, default=4)
+    basis_material = models.PositiveSmallIntegerField('Материал основы', choices=BASIS_MATERIALS, default=2)
+    covering_material = models.PositiveSmallIntegerField('Материал покрытия', choices=COVERING_MATERIAL, default=2)
+    resistance_to_light = models.PositiveSmallIntegerField('Светостойкость', choices=RESISTANCE_TO_LIGHT, default=5)
+    gluing = models.CharField('Наклеивание', max_length=2, choices=GLUING, default=2)
+    removal = models.PositiveSmallIntegerField('Снятие со стены', choices=REMOVAL, default=1)
 
     def __str__(self):
         return self.vendor_code
