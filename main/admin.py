@@ -19,8 +19,15 @@ class BrandAdmin(admin.ModelAdmin):
 
 
 class VendorCodeAdmin(admin.ModelAdmin):
-    list_display = ('vendor_code', 'width', 'retail_price', 'brand', 'rapport', 'rapport_type')
-    list_editable = ('retail_price', 'brand', 'rapport', 'rapport_type')
+    list_display = (
+        'vendor_code', 'brand', 'retail_price', 'wholesale_price', 'width', 'length', 'rapport', 'rapport_type',
+        'marking', 'moisture_resistance', 'basis_material', 'covering_material', 'resistance_to_light', 'gluing',
+        'removal'
+    )
+    list_editable = (
+        'brand', 'retail_price', 'wholesale_price', 'width', 'length', 'rapport', 'rapport_type', 'marking',
+        'moisture_resistance', 'basis_material', 'covering_material', 'resistance_to_light', 'gluing', 'removal'
+    )
     list_filter = ('width',)
     ordering = ('width', 'vendor_code')
 

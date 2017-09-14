@@ -2,16 +2,16 @@ from django.db import models
 
 
 def update_the_consignment(the_consignment):
-    receipts = ReceiptContent.objects.filter(the_consignment=the_consignment)
-    sellings = SellingContent.objects.filter(the_consignment=the_consignment)
-    purchase_returns_set = PurchaseReturnsContent.objects.filter(selling_content__the_consignment=the_consignment)
+    receipt_set = ReceiptContent.objects.filter(the_consignment=the_consignment)
+    selling_set = SellingContent.objects.filter(the_consignment=the_consignment)
+    purchase_return_set = PurchaseReturnsContent.objects.filter(selling_content__the_consignment=the_consignment)
 
     count = 0
-    for receipt in receipts:
+    for receipt in receipt_set:
         count += receipt.purchased
-    for selling in sellings:
+    for selling in selling_set:
         count -= selling.count
-    for purchase_return in purchase_returns_set:
+    for purchase_return in purchase_return_set:
         count += purchase_return.count
 
     the_consignment.count = count
@@ -119,22 +119,32 @@ class VendorCode(models.Model):
 
     brand = models.ForeignKey(Brand, null=True, blank=True)
     vendor_code = models.CharField('Артикул', max_length=20, unique=True)
-    retail_price = models.PositiveIntegerField('Розничная цена', null=True, blank=True)
-    wholesale_price = models.PositiveIntegerField('Оптовая цена', null=True, blank=True)
-    width = models.FloatField('Ширина (м)', default=1.06)
-    length = models.FloatField('Длина (м)', default=10)
+    retail_price = models.PositiveIntegerField('Розничная цена', default=0)
+    wholesale_price = models.PositiveIntegerField('Оптовая цена', default=0)
+    width = models.FloatField('Ширина', default=1.06, help_text='м')
+    length = models.FloatField('Длина', default=10, help_text='м')
     combination = models.ManyToManyField('self', verbose_name='Комбинации', blank=True)
     discontinued = models.BooleanField('Снят с производства', default=False)
-    pack = models.SmallIntegerField('Рулонов в упаковке', null=True, blank=True)
-    rapport = models.PositiveSmallIntegerField('Раппорт (см)', default=0)
-    rapport_type = models.PositiveSmallIntegerField('Тип раппорта', choices=RAPPORT_TYPES, default=1)
+    pack = models.PositiveSmallIntegerField('Рулонов в упаковке', null=True, blank=True)
+    rapport = models.PositiveSmallIntegerField('Раппорт', default=0, help_text='см', null=True, blank=True)
+    rapport_type = models.PositiveSmallIntegerField(
+        'Тип раппорта', choices=RAPPORT_TYPES, default=1, null=True, blank=True
+    )
     marking = models.CharField('Маркировка', max_length=3, choices=MARKING, null=True, blank=True)
-    moisture_resistance = models.CharField('Влагостойкость', max_length=3, choices=MOISTURE_RESISTANCES, default=4)
-    basis_material = models.PositiveSmallIntegerField('Материал основы', choices=BASIS_MATERIALS, default=2)
-    covering_material = models.PositiveSmallIntegerField('Материал покрытия', choices=COVERING_MATERIAL, default=2)
-    resistance_to_light = models.PositiveSmallIntegerField('Светостойкость', choices=RESISTANCE_TO_LIGHT, default=5)
-    gluing = models.CharField('Наклеивание', max_length=2, choices=GLUING, default=2)
-    removal = models.PositiveSmallIntegerField('Снятие со стены', choices=REMOVAL, default=1)
+    moisture_resistance = models.CharField(
+        'Влагостойкость', max_length=3, choices=MOISTURE_RESISTANCES, default='М-2', null=True, blank=True
+    )
+    basis_material = models.PositiveSmallIntegerField(
+        'Материал основы', choices=BASIS_MATERIALS, default=2, null=True, blank=True
+    )
+    covering_material = models.PositiveSmallIntegerField(
+        'Материал покрытия', choices=COVERING_MATERIAL, default=2, null=True, blank=True
+    )
+    resistance_to_light = models.PositiveSmallIntegerField(
+        'Светостойкость', choices=RESISTANCE_TO_LIGHT, default=5, null=True, blank=True
+    )
+    gluing = models.CharField('Наклеивание', max_length=2, choices=GLUING, default='ОК', null=True, blank=True)
+    removal = models.PositiveSmallIntegerField('Снятие со стены', choices=REMOVAL, default=1, null=True, blank=True)
 
     def __str__(self):
         return self.vendor_code
