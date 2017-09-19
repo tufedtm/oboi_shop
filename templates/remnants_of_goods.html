@@ -25,7 +25,7 @@
                 <td align="right">{{ object.count }}</td>
                 <td align="right">{% if object.stillage %}{{ object.stillage }}/{{ object.cell }}{% endif %}</td>
                 <td align="center">{% if object.showcase == True %}&#x2713;{% endif %}</td>
-                <td align="center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                <td align="center">{{ object.vendor_code.retail_price }}</td>
                 <td align="center">
                     {% for foo in object.vendor_code.combination.all %}
                         {{ foo }}<br>
