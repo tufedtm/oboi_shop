@@ -2,14 +2,15 @@
 
 {% block content %}
     <br>
-    <a href="{% url 'remnants_of_goods' %}?width=0.7">остатки 0,7</a>
-    <a href="{% url 'remnants_of_goods' %}?width=1.06">остатки 1,06</a>
+    <a href="{% url 'remnants_of_goods' %}?width=0.64&width=0.7">остатки 0,7</a>
+    <a href="{% url 'remnants_of_goods' %}?width=1&width=1.06">остатки 1,06</a>
     <table border="1" cellspacing="0">
         <tr>
             <th>#</th>
             <th>Артикул</th>
             <th>Партия</th>
             <th>м</th>
+            <th>Раппорт</th>
             <th>Рулонов</th>
             <th>Стеллаж</th>
             <th>Витрина</th>
@@ -22,10 +23,15 @@
                 <td>{{ object.vendor_code }}</td>
                 <td>{{ object.the_consignment }}</td>
                 <td align="center">{{ object.vendor_code.width }}</td>
+                <td align="center">
+                    {% if object.vendor_code.rapport != None %}
+                        {{ object.vendor_code.rapport }} см
+                    {% endif %}
+                </td>
                 <td align="right">{{ object.count }}</td>
                 <td align="right">{% if object.stillage %}{{ object.stillage }}/{{ object.cell }}{% endif %}</td>
                 <td align="center">{% if object.showcase == True %}&#x2713;{% endif %}</td>
-                <td align="center">{{ object.vendor_code.retail_price }}</td>
+                <td align="center">{{ object.vendor_code.retail_price }}&#x20bd</td>
                 <td align="center">
                     {% for foo in object.vendor_code.combination.all %}
                         {{ foo }}<br>

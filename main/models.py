@@ -122,7 +122,7 @@ class VendorCode(models.Model):
     retail_price = models.PositiveIntegerField('Розничная цена', default=0)
     wholesale_price = models.PositiveIntegerField('Оптовая цена', default=0)
     width = models.FloatField('Ширина', default=1.06, help_text='м')
-    length = models.FloatField('Длина', default=10, help_text='м')
+    length = models.FloatField('Длина', default=10.05, help_text='м')
     combination = models.ManyToManyField('self', verbose_name='Комбинации', blank=True)
     discontinued = models.BooleanField('Снят с производства', default=False)
     pack = models.PositiveSmallIntegerField('Рулонов в упаковке', null=True, blank=True)
