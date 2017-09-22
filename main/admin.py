@@ -20,7 +20,7 @@ class BrandAdmin(admin.ModelAdmin):
 
 class VendorCodeAdmin(admin.ModelAdmin):
     list_display = (
-        'vendor_code', 'brand', 'retail_price', 'wholesale_price', 'width', 'length', 'rapport', 'rapport_type',
+        'vendor_code', 'brand', 'wholesale_price', 'width', 'length', 'rapport', 'rapport_type',
         'moisture_resistance', 'basis_material', 'covering_material', 'resistance_to_light', 'gluing', 'removal'
     )
     list_filter = ('width',)
@@ -29,8 +29,7 @@ class VendorCodeAdmin(admin.ModelAdmin):
 
 class TheConsignmentAdmin(admin.ModelAdmin):
     raw_id_fields = ('vendor_code',)
-    list_display = ('vendor_code', 'the_consignment', 'count', 'stillage', 'cell', 'showcase')
-    # list_editable = ('count', 'stillage', 'cell', 'showcase')
+    list_display = ('vendor_code', 'the_consignment', 'retail_price', 'count', 'stillage', 'cell', 'showcase')
     list_filter = ('showcase', 'vendor_code__width')
     ordering = ('vendor_code__width', 'vendor_code__vendor_code', 'the_consignment')
 

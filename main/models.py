@@ -21,10 +21,10 @@ def update_the_consignment(the_consignment):
 class Contractor(models.Model):
     contractor_type = models.BooleanField('Поставщик?', default=False)
     first_name = models.CharField('Имя', max_length=50)
-    company_name = models.CharField('Название компании', max_length=50, null=True, blank=True)
-    last_name = models.CharField('Фамилия', max_length=50, null=True, blank=True)
-    patronymic = models.CharField('Отчество', max_length=50, null=True, blank=True)
-    phone_number = models.CharField('Номер телефона', max_length=20, null=True, blank=True)
+    company_name = models.CharField('Название компании', max_length=50, blank=True)
+    last_name = models.CharField('Фамилия', max_length=50, blank=True)
+    patronymic = models.CharField('Отчество', max_length=50, blank=True)
+    phone_number = models.CharField('Номер телефона', max_length=20, blank=True)
 
     def __str__(self):
         if self.contractor_type:
@@ -52,7 +52,7 @@ class Brand(models.Model):
 
     name = models.CharField('Бренд', max_length=100, null=True, blank=True)
     country_of_origin = models.CharField('Страна производства', max_length=2, choices=sorted(COUNTRIES_OF_ORIGIN))
-    company_of_origin = models.CharField('Компания производитель', max_length=100, null=True, blank=True)
+    company_of_origin = models.CharField('Компания производитель', max_length=100, blank=True)
 
     def __str__(self):
         if self.name:
@@ -82,14 +82,6 @@ class VendorCode(models.Model):
         ('СТР', 'Структурные'),
         ('ТСК', 'Текстильные'),
     )
-    MOISTURE_RESISTANCES = (
-        ('В-0', 'Влагостойкие при наклеивании'),
-        ('В-1', 'Влагостойкие при эксплуатации'),
-        ('М-1', 'Устойчивые к мытью (моющиеся)'),
-        ('М-2', 'Высокоустойчивые к мытью'),
-        ('М-3', 'Устойчивые к трению'),
-        ('М-4', 'Высокоустойчивые к трению'),
-    )
     BASIS_MATERIALS = (
         (1, 'бумага'),
         (2, 'флизелин'),
@@ -97,6 +89,14 @@ class VendorCode(models.Model):
     COVERING_MATERIAL = (
         (1, 'бумага'),
         (2, 'винил'),
+    )
+    MOISTURE_RESISTANCES = (
+        ('В-0', 'Влагостойкие при наклеивании'),
+        ('В-1', 'Влагостойкие при эксплуатации'),
+        ('М-1', 'Устойчивые к мытью (моющиеся)'),
+        ('М-2', 'Высокоустойчивые к мытью'),
+        ('М-3', 'Устойчивые к трению'),
+        ('М-4', 'Высокоустойчивые к трению'),
     )
     RESISTANCE_TO_LIGHT = (
         (3, 'средняя'),
@@ -119,31 +119,30 @@ class VendorCode(models.Model):
 
     brand = models.ForeignKey(Brand, null=True, blank=True)
     vendor_code = models.CharField('Артикул', max_length=20, unique=True)
-    retail_price = models.PositiveIntegerField('Розничная цена', default=0)
     wholesale_price = models.PositiveIntegerField('Оптовая цена', default=0)
     width = models.FloatField('Ширина', default=1.06, help_text='м')
     length = models.FloatField('Длина', default=10.05, help_text='м')
-    combination = models.ManyToManyField('self', verbose_name='Комбинации', blank=True)
+    combination = models.ManyToManyField('self', verbose_name='Компаньоны', blank=True)
     discontinued = models.BooleanField('Снят с производства', default=False)
     pack = models.PositiveSmallIntegerField('Рулонов в упаковке', null=True, blank=True)
-    rapport = models.PositiveSmallIntegerField('Раппорт', default=0, help_text='см', null=True, blank=True)
+    rapport = models.CharField('Раппорт', max_length=9, default=0, help_text='см', blank=True)
     rapport_type = models.PositiveSmallIntegerField(
         'Тип раппорта', choices=RAPPORT_TYPES, default=1, null=True, blank=True
     )
-    marking = models.CharField('Маркировка', max_length=3, choices=MARKING, null=True, blank=True)
-    moisture_resistance = models.CharField(
-        'Влагостойкость', max_length=3, choices=MOISTURE_RESISTANCES, default='М-2', null=True, blank=True
-    )
+    marking = models.CharField('Маркировка', max_length=3, choices=MARKING, blank=True)
     basis_material = models.PositiveSmallIntegerField(
         'Материал основы', choices=BASIS_MATERIALS, default=2, null=True, blank=True
     )
     covering_material = models.PositiveSmallIntegerField(
         'Материал покрытия', choices=COVERING_MATERIAL, default=2, null=True, blank=True
     )
+    moisture_resistance = models.CharField(
+        'Влагостойкость', max_length=3, choices=MOISTURE_RESISTANCES, default='М-2', null=True, blank=True
+    )
     resistance_to_light = models.PositiveSmallIntegerField(
         'Светостойкость', choices=RESISTANCE_TO_LIGHT, default=5, null=True, blank=True
     )
-    gluing = models.CharField('Наклеивание', max_length=2, choices=GLUING, default='ОК', null=True, blank=True)
+    gluing = models.CharField('Наклеивание', max_length=2, choices=GLUING, default='ОК', blank=True)
     removal = models.PositiveSmallIntegerField('Снятие со стены', choices=REMOVAL, default=1, null=True, blank=True)
 
     def __str__(self):
@@ -159,7 +158,8 @@ class TheConsignment(models.Model):
     CELLS = ((x, x) for x in range(1, 21))
 
     vendor_code = models.ForeignKey(VendorCode, verbose_name='Артикул')
-    the_consignment = models.CharField('Партия', max_length=20, null=True, blank=True)
+    the_consignment = models.CharField('Партия', max_length=20, blank=True)
+    retail_price = models.PositiveIntegerField('Розничная цена', default=0)
     count = models.PositiveSmallIntegerField('Количество рулонов')
     stillage = models.PositiveSmallIntegerField('Стеллаж', choices=STILLAGES, null=True, blank=True)
     cell = models.PositiveSmallIntegerField('Ячейка', choices=CELLS, null=True, blank=True)
@@ -250,7 +250,7 @@ class SellingContent(models.Model):
     selling_order = models.ForeignKey(Selling)
     the_consignment = models.ForeignKey(TheConsignment)
     count = models.PositiveSmallIntegerField('Количество')
-    price = models.PositiveIntegerField('Розничная цена')
+    price = models.PositiveIntegerField('Продажная цена')
     retail_price = models.PositiveIntegerField('Розничная цена', editable=False)
 
     def __str__(self):
@@ -262,7 +262,7 @@ class SellingContent(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.pk:
-            self.retail_price = self.the_consignment.vendor_code.retail_price
+            self.retail_price = self.the_consignment.retail_price
         super(SellingContent, self).save(*args, **kwargs)
         update_the_consignment(self.the_consignment)
 
@@ -291,6 +291,7 @@ class PurchaseReturnsContent(models.Model):
     purchase_returns = models.ForeignKey(PurchaseReturns)
     selling_content = models.ForeignKey(SellingContent)
     count = models.PositiveSmallIntegerField('Количество')
+    reason = models.CharField('Причина', max_length=500)
 
     def delete(self, *args, **kwargs):
         super(PurchaseReturnsContent, self).delete(*args, **kwargs)
