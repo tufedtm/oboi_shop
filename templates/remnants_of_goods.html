@@ -3,7 +3,7 @@
 {% block content %}
     <br>
     <a href="{% url 'remnants_of_goods' %}?width=0.64&width=0.7">остатки 0,7</a>
-    <a href="{% url 'remnants_of_goods' %}?width=1&width=1.06">остатки 1,06</a>
+    <a href="{% url 'remnants_of_goods' %}?width=1&width=1.04&width=1.06">остатки 1,06</a>
     <table border="1" cellspacing="0">
         <tr>
             <th>#</th>
@@ -25,7 +25,7 @@
                 <td align="center">{{ object.vendor_code.width }}</td>
                 <td align="center">
                     {% if object.vendor_code.rapport != None %}
-                        {{ object.vendor_code.rapport }} см
+                        {{ object.vendor_code.rapport }}см
                     {% endif %}
                 </td>
                 <td align="right">{{ object.count }}</td>
