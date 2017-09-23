@@ -20,8 +20,8 @@ class BrandAdmin(admin.ModelAdmin):
 
 class VendorCodeAdmin(admin.ModelAdmin):
     list_display = (
-        'vendor_code', 'brand', 'wholesale_price', 'width', 'length', 'rapport', 'rapport_type',
-        'moisture_resistance', 'basis_material', 'covering_material', 'resistance_to_light', 'gluing', 'removal'
+        'vendor_code', 'brand', 'length', 'rapport', 'rapport_type',
+        'basis_material', 'covering_material', 'moisture_resistance', 'resistance_to_light', 'gluing', 'removal'
     )
     list_filter = ('width',)
     ordering = ('width', 'vendor_code')
