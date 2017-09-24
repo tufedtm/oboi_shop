@@ -51,6 +51,7 @@ class Brand(models.Model):
     )
 
     name = models.CharField('Бренд', max_length=100, null=True, blank=True)
+    short_name = models.CharField('Сокращенное название', max_length=50, blank=True)
     country_of_origin = models.CharField('Страна производства', max_length=2, choices=sorted(COUNTRIES_OF_ORIGIN))
     company_of_origin = models.CharField('Компания производитель', max_length=100, blank=True)
 
@@ -229,6 +230,7 @@ class Selling(models.Model):
     date_create = models.DateTimeField('Дата составления')
     paid = models.BooleanField('Оплачено?')
     date_paid = models.DateTimeField('Дата оплаты', null=True, blank=True)
+    discount = models.PositiveSmallIntegerField('Скидка с суммы', null=True, blank=True)
 
     def __str__(self):
         return '{0} {1} {2}'.format(self.pk, self.buyer, self.date_create.time())
@@ -252,6 +254,7 @@ class SellingContent(models.Model):
     count = models.PositiveSmallIntegerField('Количество')
     price = models.PositiveIntegerField('Продажная цена')
     retail_price = models.PositiveIntegerField('Розничная цена', editable=False)
+    complement = models.BooleanField('Докупка', default=False)
 
     def __str__(self):
         return '{0} - {1}\u20BD'.format(self.selling_order, self.price)
