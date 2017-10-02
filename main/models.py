@@ -167,16 +167,18 @@ class TheConsignment(models.Model):
     showcase = models.BooleanField('На витрине?', default=True)
 
     def __str__(self):
-        if self.stillage:
-            return '{0} ({1}) — {2} ({3}/{4})'.format(
+        if self.cell:
+            return '{0} [{1}] — {2} ({3}/{4})'.format(
                 self.vendor_code,
                 self.the_consignment,
                 self.count,
                 self.stillage,
                 self.cell
             )
+        elif self.stillage:
+            return '{0} [{1}] — {2} ({3})'.format(self.vendor_code, self.the_consignment, self.count, self.stillage)
         else:
-            return '{0} ({1}) — {2}'.format(self.vendor_code, self.the_consignment, self.count)
+            return '{0} [{1}] — {2}'.format(self.vendor_code, self.the_consignment, self.count)
 
     class Meta:
         verbose_name = 'Партия'

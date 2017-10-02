@@ -29,7 +29,13 @@
                     {% endif %}
                 </td>
                 <td align="right">{{ object.count }}</td>
-                <td align="right">{% if object.stillage %}{{ object.stillage }}/{{ object.cell }}{% endif %}</td>
+                <td align="right">
+                    {% if object.cell %}
+                        {{ object.stillage }}/{{ object.cell }}
+                    {% elif object.stillage %}
+                        {{ object.stillage }}
+                    {% endif %}
+                </td>
                 <td align="center">{% if object.showcase == True %}&#x2713;{% endif %}</td>
                 <td align="center">{{ object.retail_price }}&#x20bd</td>
                 <td align="center">
