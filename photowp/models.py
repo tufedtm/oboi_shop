@@ -1,27 +1,16 @@
 from django.db import models
 
 
-class PhotoWPName(models.Model):
-    name = models.CharField('Наименование', max_length=100)
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name = 'Наименование'
-        verbose_name_plural = 'Наименования'
-
-
 class PhotoWP(models.Model):
     SHEETS = (
-        (1, 2),
-        (2, 4),
-        (3, 6),
-        (4, 8),
-        (5, 9),
-        (6, 12),
-        (7, 15),
-        (8, 16),
+        (2, 2),
+        (3, 3),
+        (4, 4),
+        (6, 6),
+        (8, 8),
+        (9, 9),
+        (12, 12),
+        (16, 16),
     )
     DIMENSIONS = (
         (1, 97),
@@ -51,16 +40,17 @@ class PhotoWP(models.Model):
         (4, 'Басс (премиум)'),
     )
 
-    name = models.ForeignKey(PhotoWPName, verbose_name='Наименование')
-    category = models.CharField('Категория', max_length=100, choices=CATEGORIES)
+    name = models.CharField('Наименование', max_length=100)
+    category = models.PositiveSmallIntegerField('Категория', choices=CATEGORIES)
     sheet = models.PositiveSmallIntegerField('Листов', choices=SHEETS)
     width = models.PositiveSmallIntegerField('Ширина', choices=DIMENSIONS)
-    length = models.PositiveSmallIntegerField('Длина', choices=DIMENSIONS)
-    vendor_code = models.CharField('Артикул', max_length=10)
+    height = models.PositiveSmallIntegerField('Высота', choices=DIMENSIONS)
+    vendor_code = models.CharField('Артикул', max_length=10, blank=True)
     count = models.PositiveSmallIntegerField('Количество')
+    retail_price = models.PositiveIntegerField('Розничная цена')
 
     def __str__(self):
-        return '{0} {1} {2}x{3}'.format(self.name, self.sheet, self.width, self.length)
+        return '{0} {1}л {2}x{3}'.format(self.name, self.sheet, self.width, self.height)
 
     class Meta:
         verbose_name = 'Фотообои'

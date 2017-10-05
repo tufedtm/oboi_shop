@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1 align="center">{% now 'j F Y' %}</h1>
+
+    <table border="1" cellspacing="0">
+        <tr>
+            <th>#</th>
+            <th>Наименование</th>
+            <th>Листов</th>
+            <th>ШхВ</th>
+            <th>Остаток</th>
+            <th>Цена</th>
+        </tr>
+        {% for object in object_list %}
+            <tr>
+                <td align="center">{{ forloop.counter }}</td>
+                <td>{{ object.name }} ({{ object.vendor_code }})</td>
+                <td align="center">{{ object.sheet }}</td>
+                <td align="center">{{ object.get_width_display }}x{{ object.get_length_display }}</td>
+                <td align="right">{{ object.count }}</td>
+                <td align="center">{{ object.retail_price }}&#x20bd</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

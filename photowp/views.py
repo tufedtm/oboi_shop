@@ -1,3 +1,8 @@
-from django.shortcuts import render
+from django.views.generic import ListView
 
-# Create your views here.
+from .models import PhotoWP
+
+
+class Remnants(ListView):
+    template_name = 'photowp/remnants_of_photo.html'
+    queryset = PhotoWP.objects.order_by('sheet', 'name')
