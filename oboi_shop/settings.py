@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'glue',
     'main',
     'photowp',
+    'commodity_turnover',
 ]
 
 MIDDLEWARE = [
