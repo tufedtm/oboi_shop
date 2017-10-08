@@ -1,17 +1,7 @@
 from django.contrib import admin
+from django.contrib.auth.models import Group, User
 
-from .models import (
-    Brand,
-    Contractor,
-    PurchaseReturns,
-    PurchaseReturnsContent,
-    Receipt,
-    ReceiptContent,
-    Selling,
-    SellingContent,
-    TheConsignment,
-    VendorCode
-)
+from .models import Brand, TheConsignment, VendorCode
 
 
 class BrandAdmin(admin.ModelAdmin):
@@ -34,38 +24,8 @@ class TheConsignmentAdmin(admin.ModelAdmin):
     ordering = ('vendor_code__width', 'vendor_code__vendor_code', 'the_consignment')
 
 
-class ReceiptInline(admin.TabularInline):
-    model = ReceiptContent
-
-
-class ReceiptAdmin(admin.ModelAdmin):
-    actions = None
-    inlines = (ReceiptInline,)
-
-
-class SellingInline(admin.TabularInline):
-    model = SellingContent
-
-
-class SellingAdmin(admin.ModelAdmin):
-    actions = None
-    inlines = (SellingInline,)
-    list_display = ('buyer', 'paid')
-
-
-class PurchaseReturnsInline(admin.TabularInline):
-    model = PurchaseReturnsContent
-
-
-class PurchaseReturnsAdmin(admin.ModelAdmin):
-    actions = None
-    inlines = (PurchaseReturnsInline,)
-
-
+admin.site.unregister(User)
+admin.site.unregister(Group)
 admin.site.register(Brand, BrandAdmin)
-admin.site.register(Contractor)
 admin.site.register(VendorCode, VendorCodeAdmin)
 admin.site.register(TheConsignment, TheConsignmentAdmin)
-admin.site.register(Receipt, ReceiptAdmin)
-admin.site.register(Selling, SellingAdmin)
-admin.site.register(PurchaseReturns, PurchaseReturnsAdmin)

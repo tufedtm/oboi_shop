@@ -1,41 +1,6 @@
 from django.db import models
 
 
-def update_the_consignment(the_consignment):
-    receipt_set = ReceiptContent.objects.filter(the_consignment=the_consignment)
-    selling_set = SellingContent.objects.filter(the_consignment=the_consignment)
-    purchase_return_set = PurchaseReturnsContent.objects.filter(selling_content__the_consignment=the_consignment)
-
-    count = 0
-    for receipt in receipt_set:
-        count += receipt.purchased
-    for selling in selling_set:
-        count -= selling.count
-    for purchase_return in purchase_return_set:
-        count += purchase_return.count
-
-    the_consignment.count = count
-    the_consignment.save()
-
-
-class Contractor(models.Model):
-    contractor_type = models.BooleanField('Поставщик?', default=False)
-    first_name = models.CharField('Имя', max_length=50)
-    company_name = models.CharField('Название компании', max_length=50, blank=True)
-    last_name = models.CharField('Фамилия', max_length=50, blank=True)
-    patronymic = models.CharField('Отчество', max_length=50, blank=True)
-    phone_number = models.CharField('Номер телефона', max_length=20, blank=True)
-
-    def __str__(self):
-        if self.contractor_type:
-            return '{0} {1} ({2}) {3}'.format(self.first_name, self.last_name, self.phone_number, self.company_name)
-        return '{0} {1} ({2})'.format(self.first_name, self.last_name, self.phone_number)
-
-    class Meta:
-        verbose_name = 'Контрагент'
-        verbose_name_plural = 'Контрагенты'
-
-
 class Brand(models.Model):
     COUNTRIES_OF_ORIGIN = (
         ('RU', 'Россия'),
@@ -125,7 +90,7 @@ class VendorCode(models.Model):
     length = models.FloatField('Длина', default=10.05, help_text='м')
     combination = models.ManyToManyField('self', verbose_name='Компаньоны', blank=True)
     discontinued = models.BooleanField('Снят с производства', default=False)
-    pack = models.PositiveSmallIntegerField('Рулонов в упаковке', null=True, blank=True)
+    pack = models.PositiveSmallIntegerField('Рулонов в коробке', null=True, blank=True)
     rapport = models.CharField('Раппорт', max_length=9, default=0, help_text='см', blank=True)
     rapport_type = models.PositiveSmallIntegerField(
         'Тип раппорта', choices=RAPPORT_TYPES, default=1, null=True, blank=True
@@ -187,11 +152,7 @@ class TheConsignment(models.Model):
 
 
 class Receipt(models.Model):
-    shipper = models.ForeignKey(Contractor)
     date = models.DateTimeField('Дата')
-
-    def __str__(self):
-        return '{0} {1} {2}'.format(self.shipper, self.date.date(), self.date.time())
 
     def delete(self, *args, **kwargs):
         the_consignment_set = []
@@ -201,41 +162,12 @@ class Receipt(models.Model):
         for the_consignment in the_consignment_set:
             update_the_consignment(the_consignment)
 
-    class Meta:
-        verbose_name = 'Поступление товара'
-        verbose_name_plural = 'Поступления товара'
-
-
-class ReceiptContent(models.Model):
-    receipt = models.ForeignKey(Receipt)
-    the_consignment = models.ForeignKey(TheConsignment)
-    purchased = models.PositiveSmallIntegerField('Закуплено')
-    balance = models.PositiveSmallIntegerField('Остаток', editable=False)
-    price = models.PositiveIntegerField('Закупочная цена')
-
-    def __str__(self):
-        return '{0} {1}рул — {2}\u20BD'.format(self.the_consignment, self.balance, self.price)
-
-    def delete(self, *args, **kwargs):
-        super(ReceiptContent, self).delete(*args, **kwargs)
-        update_the_consignment(self.the_consignment)
-
-    def save(self, *args, **kwargs):
-        if not self.pk:
-            self.balance = self.purchased
-        super(ReceiptContent, self).save(*args, **kwargs)
-        update_the_consignment(self.the_consignment)
-
 
 class Selling(models.Model):
-    buyer = models.ForeignKey(Contractor)
     date_create = models.DateTimeField('Дата составления')
     paid = models.BooleanField('Оплачено?')
     date_paid = models.DateTimeField('Дата оплаты', null=True, blank=True)
     discount = models.PositiveSmallIntegerField('Скидка с суммы', null=True, blank=True)
-
-    def __str__(self):
-        return '{0} {1} {2}'.format(self.pk, self.buyer, self.date_create.time())
 
     def delete(self, *args, **kwargs):
         the_consignment_set = []
@@ -245,39 +177,10 @@ class Selling(models.Model):
         for the_consignment in the_consignment_set:
             update_the_consignment(the_consignment)
 
-    class Meta:
-        verbose_name = 'Реализация товара'
-        verbose_name_plural = 'Реалицазии товара'
-
-
-class SellingContent(models.Model):
-    selling_order = models.ForeignKey(Selling)
-    the_consignment = models.ForeignKey(TheConsignment)
-    count = models.PositiveSmallIntegerField('Количество')
-    price = models.PositiveIntegerField('Продажная цена')
-    retail_price = models.PositiveIntegerField('Розничная цена', editable=False)
-    complement = models.BooleanField('Докупка', default=False)
-
-    def __str__(self):
-        return '{0} - {1}\u20BD'.format(self.selling_order, self.price)
-
-    def delete(self, *args, **kwargs):
-        super(SellingContent, self).delete(*args, **kwargs)
-        update_the_consignment(self.the_consignment)
-
-    def save(self, *args, **kwargs):
-        if not self.pk:
-            self.retail_price = self.the_consignment.retail_price
-        super(SellingContent, self).save(*args, **kwargs)
-        update_the_consignment(self.the_consignment)
-
 
 class PurchaseReturns(models.Model):
     selling = models.ForeignKey(Selling)
     date = models.DateTimeField('Дата')
-
-    def __str__(self):
-        return '{0} ({1})'.format(self.selling, self.date.time())
 
     def delete(self, *args, **kwargs):
         the_consignment_set = []
@@ -286,22 +189,3 @@ class PurchaseReturns(models.Model):
         super(PurchaseReturns, self).delete(*args, **kwargs)
         for the_consignment in the_consignment_set:
             update_the_consignment(the_consignment)
-
-    class Meta:
-        verbose_name = 'Возврат товара'
-        verbose_name_plural = 'Возвраты товара'
-
-
-class PurchaseReturnsContent(models.Model):
-    purchase_returns = models.ForeignKey(PurchaseReturns)
-    selling_content = models.ForeignKey(SellingContent)
-    count = models.PositiveSmallIntegerField('Количество')
-    reason = models.CharField('Причина', max_length=500)
-
-    def delete(self, *args, **kwargs):
-        super(PurchaseReturnsContent, self).delete(*args, **kwargs)
-        update_the_consignment(self.selling_content.the_consignment)
-
-    def save(self, *args, **kwargs):
-        super(PurchaseReturnsContent, self).save(*args, **kwargs)
-        update_the_consignment(self.selling_content.the_consignment)
