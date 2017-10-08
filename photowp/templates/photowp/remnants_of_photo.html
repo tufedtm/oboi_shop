@@ -9,15 +9,21 @@
             <th>Наименование</th>
             <th>Листов</th>
             <th>ШхВ</th>
-            <th>Остаток</th>
+            <th>шт</th>
             <th>Цена</th>
         </tr>
         {% for object in object_list %}
             <tr>
                 <td align="center">{{ forloop.counter }}</td>
-                <td>{{ object.name }} ({{ object.vendor_code }})</td>
+                <td>
+                    {% if object.vendor_code %}
+                        {{ object.name }} ({{ object.vendor_code }})
+                    {% else %}
+                        {{ object.name }}
+                    {% endif %}
+                </td>
                 <td align="center">{{ object.sheet }}</td>
-                <td align="center">{{ object.get_width_display }}x{{ object.get_length_display }}</td>
+                <td align="center">{{ object.width }}x{{ object.height }}</td>
                 <td align="right">{{ object.count }}</td>
                 <td align="center">{{ object.retail_price }}&#x20bd</td>
             </tr>
