@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1 align="center">{% now 'j F Y' %}</h1>
+
+    <table border="1" cellspacing="0">
+        <tr>
+            <th>#</th>
+            <th>Наименование</th>
+            <th>Тип</th>
+            <th>Вес</th>
+            <th>Остаток</th>
+            <th>Цена</th>
+        </tr>
+        {% for object in object_list %}
+            <tr>
+                <td align="center">{{ forloop.counter }}</td>
+                <td>{{ object.brand }}</td>
+                <td align="center">
+                    {% for glue_type in object.glue_type.all %}
+                        {% if forloop.last %}
+                            {{ glue_type.name }}
+                        {% else %}
+                            {{ glue_type.name }},
+                        {% endif %}
+                    {% endfor %}
+                </td>
+                <td align="center">{{ object.weight }}гр</td>
+                <td align="right">{{ object.count }}</td>
+                <td align="center">{{ object.retail_price }}&#x20bd</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
