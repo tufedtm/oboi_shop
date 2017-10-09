@@ -8,6 +8,7 @@
             <th>#</th>
             <th>Наименование</th>
             <th>Тип</th>
+            <th>м<sup>2</sup></th>
             <th>Вес</th>
             <th>Остаток</th>
             <th>Цена</th>
@@ -21,10 +22,11 @@
                         {% if forloop.last %}
                             {{ glue_type.name }}
                         {% else %}
-                            {{ glue_type.name }},
+                            {{ glue_type.name }}<br>
                         {% endif %}
                     {% endfor %}
                 </td>
+                <td align="center">{{ object.area }}м<sup>2</sup></td>
                 <td align="center">{{ object.weight }}гр</td>
                 <td align="right">{{ object.count }}</td>
                 <td align="center">{{ object.retail_price }}&#x20bd</td>

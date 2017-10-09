@@ -56,7 +56,7 @@ class ReceiptContent(models.Model):
     content_type = models.ForeignKey(
         ContentType,
         on_delete=models.CASCADE,
-        limit_choices_to={'model__in': ('theconsignment',)},
+        limit_choices_to={'model__in': ('theconsignment', 'photowp', 'glue')},
     )
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
@@ -94,7 +94,7 @@ class SellingContent(models.Model):
     content_type = models.ForeignKey(
         ContentType,
         on_delete=models.CASCADE,
-        limit_choices_to={'model__in': ('theconsignment',)},
+        limit_choices_to={'model__in': ('theconsignment', 'photowp', 'glue')},
     )
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')

@@ -8,6 +8,7 @@ class Brand(models.Model):
         return self.name
 
     class Meta:
+        ordering = ('name',)
         verbose_name = 'Бренд'
         verbose_name_plural = 'Бренды'
 
@@ -19,6 +20,7 @@ class GlueType(models.Model):
         return self.name
 
     class Meta:
+        ordering = ('name',)
         verbose_name = 'Тип клея'
         verbose_name_plural = 'Типы клея'
 
@@ -29,6 +31,7 @@ class Glue(models.Model):
     retail_price = models.PositiveSmallIntegerField('Розничная цена')
     count = models.PositiveSmallIntegerField('Количество')
     pack = models.PositiveSmallIntegerField('Пачек в коробке')
+    area = models.PositiveSmallIntegerField('На площадь')
     glue_type = models.ManyToManyField(GlueType, verbose_name='Тип клея')
 
     def __str__(self):
