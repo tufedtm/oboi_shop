@@ -2,6 +2,7 @@
 
 {% block content %}
     <br>
+    <a href="{% url 'remnants_of_goods' %}?width=0.52&width=0.53">остатки 0,53</a>
     <a href="{% url 'remnants_of_goods' %}?width=0.64&width=0.7">остатки 0,7</a>
     <a href="{% url 'remnants_of_goods' %}?width=1&width=1.04&width=1.06">остатки 1,06</a>
 
@@ -33,11 +34,7 @@
                 </td>
                 <td align="right">{{ object.count }}</td>
                 <td align="right">
-                    {% if object.cell %}
-                        {{ object.stillage }}/{{ object.cell }}
-                    {% elif object.stillage %}
-                        {{ object.stillage }}
-                    {% endif %}
+                    {{ object.get_stillage }}
                 </td>
                 <td align="center">{% if object.showcase == True %}&#x2713;{% endif %}</td>
                 <td align="center">{{ object.retail_price }}&#x20bd</td>
