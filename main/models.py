@@ -147,6 +147,8 @@ class TheConsignment(models.Model):
             return '{0}/{1}'.format(self.stillage, self.cell)
         elif self.stillage:
             return self.stillage
+        else:
+            return ''
 
     class Meta:
         verbose_name = 'Партия'
