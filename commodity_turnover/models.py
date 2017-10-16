@@ -4,10 +4,11 @@ from django.db import models
 
 
 def update_balance(model, object_id):
-    model = model.get_object_for_this_type(pk=object_id)
-    receipt_set = ReceiptContent.objects.filter(object_id=object_id)
-    selling_set = SellingContent.objects.filter(object_id=object_id)
-    purchase_return_set = PurchaseReturnContent.objects.filter(selling_content__object_id=object_id)
+    goods = model.get_object_for_this_type(pk=object_id)
+    receipt_set = ReceiptContent.objects.filter(content_type=model, object_id=object_id)
+    selling_set = SellingContent.objects.filter(content_type=model, object_id=object_id)
+    purchase_return_set = PurchaseReturnContent.objects\
+        .filter(selling_content__content_type=model, selling_content__object_id=object_id)
 
     count = 0
     for receipt in receipt_set:
@@ -17,8 +18,8 @@ def update_balance(model, object_id):
     for purchase_return in purchase_return_set:
         count += purchase_return.count
 
-    model.count = count
-    model.save()
+    goods.count = count
+    goods.save()
 
 
 class Contractor(models.Model):
@@ -30,9 +31,7 @@ class Contractor(models.Model):
     phone_number = models.CharField('Номер телефона', max_length=20, blank=True)
 
     def __str__(self):
-        if self.contractor_type:
-            return '{0} {1} ({2}) {3}'.format(self.first_name, self.last_name, self.phone_number, self.company_name)
-        return '{0} {1} ({2})'.format(self.first_name, self.last_name, self.phone_number)
+        return '{0} {1}'.format(self.first_name, self.last_name)
 
     class Meta:
         verbose_name = 'Контрагент'
@@ -82,7 +81,7 @@ class Selling(models.Model):
     discount = models.PositiveSmallIntegerField('Скидка с суммы', null=True, blank=True)
 
     def __str__(self):
-        return '{0} {1} {2}'.format(self.pk, self.buyer, self.date_create.time())
+        return '{0} {1} {2} {3}'.format(self.pk, self.buyer, self.date_create.date(), self.date_create.time())
 
     class Meta:
         verbose_name = 'Реализация товара'
@@ -104,7 +103,11 @@ class SellingContent(models.Model):
     complement = models.BooleanField('Докупка', default=False)
 
     def __str__(self):
-        return '{0} - {1}\u20BD'.format(self.selling_order, self.price)
+        return '{0} — {1} - {2}\u20BD'.format(
+            self.selling_order,
+            self.content_type.get_object_for_this_type(pk=self.object_id),
+            self.price
+        )
 
     def save(self, *args, **kwargs):
         model = ContentType.objects.get(model=self.content_type.model)
@@ -135,6 +138,9 @@ class PurchaseReturnContent(models.Model):
     selling_content = models.ForeignKey(SellingContent, verbose_name=SellingContent._meta.verbose_name)
     count = models.PositiveSmallIntegerField('Количество')
     reason = models.CharField('Причина', max_length=500)
+
+    def __str__(self):
+        return '{0} — {1}'.format(self.purchase_returns, self.count)
 
     def save(self, *args, **kwargs):
         super(PurchaseReturnContent, self).save(*args, **kwargs)
