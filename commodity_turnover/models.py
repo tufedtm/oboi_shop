@@ -1,6 +1,7 @@
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.utils import timezone
 
 
 def update_balance(model, object_id):
@@ -43,7 +44,7 @@ class Receipt(models.Model):
     date = models.DateTimeField('Дата')
 
     def __str__(self):
-        return '{0} {1} {2}'.format(self.shipper, self.date.date(), self.date.time())
+        return '{0} {1} {2}'.format(self.shipper, self.date.date(), timezone.localtime(self.date).time())
 
     class Meta:
         verbose_name = 'Поступление товара'
@@ -81,7 +82,12 @@ class Selling(models.Model):
     discount = models.PositiveSmallIntegerField('Скидка с суммы', null=True, blank=True)
 
     def __str__(self):
-        return '{0} {1} {2} {3}'.format(self.pk, self.buyer, self.date_create.date(), self.date_create.time())
+        return '{0} {1} {2} {3}'.format(
+            self.pk,
+            self.buyer,
+            self.date_create.date(),
+            timezone.localtime(self.date_create).time()
+        )
 
     class Meta:
         verbose_name = 'Реализация товара'
@@ -126,7 +132,7 @@ class PurchaseReturn(models.Model):
     date = models.DateTimeField('Дата')
 
     def __str__(self):
-        return '{0} ({1})'.format(self.selling, self.date.time())
+        return '{0} ({1})'.format(self.selling, timezone.localtime(self.date).time())
 
     class Meta:
         verbose_name = 'Возврат товара'
