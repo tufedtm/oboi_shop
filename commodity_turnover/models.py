@@ -8,14 +8,17 @@ def update_balance(model, object_id):
     goods = model.get_object_for_this_type(pk=object_id)
     receipt_set = ReceiptContent.objects.filter(content_type=model, object_id=object_id)
     selling_set = SellingContent.objects.filter(content_type=model, object_id=object_id)
-    purchase_return_set = PurchaseReturnContent.objects\
+    purchase_return_set = PurchaseReturnContent.objects \
         .filter(selling_content__content_type=model, selling_content__object_id=object_id)
 
     count = 0
     for receipt in receipt_set:
         count += receipt.count
     for selling in selling_set:
-        count -= selling.count
+        if selling.pack and selling.wholesale:
+            count -= goods.pack * selling.count
+        else:
+            count -= selling.count
     for purchase_return in purchase_return_set:
         count += purchase_return.count
 
@@ -55,10 +58,11 @@ class ReceiptContent(models.Model):
     receipt = models.ForeignKey(Receipt, verbose_name=Receipt._meta.verbose_name)
     content_type = models.ForeignKey(
         ContentType,
+        verbose_name='Тип товара',
         on_delete=models.CASCADE,
         limit_choices_to={'model__in': ('theconsignment', 'photowp', 'glue')},
     )
-    object_id = models.PositiveIntegerField()
+    object_id = models.PositiveIntegerField('Товар')
     content_object = GenericForeignKey('content_type', 'object_id')
     count = models.PositiveSmallIntegerField('Закуплено')
     price = models.PositiveIntegerField('Закупочная цена')
@@ -98,15 +102,18 @@ class SellingContent(models.Model):
     selling_order = models.ForeignKey(Selling, verbose_name=Selling._meta.verbose_name)
     content_type = models.ForeignKey(
         ContentType,
+        verbose_name='Тип товара',
         on_delete=models.CASCADE,
         limit_choices_to={'model__in': ('theconsignment', 'photowp', 'glue')},
     )
-    object_id = models.PositiveIntegerField()
+    object_id = models.PositiveIntegerField('Товар')
     content_object = GenericForeignKey('content_type', 'object_id')
     count = models.PositiveSmallIntegerField('Количество')
     price = models.PositiveIntegerField('Продажная цена')
-    retail_price = models.PositiveIntegerField('Розничная цена', editable=False)
+    wholesale = models.BooleanField('Оптом?', default=False)
+    pack = models.BooleanField('Коробка?', default=False)
     complement = models.BooleanField('Докупка', default=False)
+    sold_price = models.PositiveIntegerField('Розничная цена', editable=False)
 
     def __str__(self):
         return '{0} — {1} - {2}\u20BD'.format(
@@ -118,7 +125,12 @@ class SellingContent(models.Model):
     def save(self, *args, **kwargs):
         model = ContentType.objects.get(model=self.content_type.model)
         if not self.pk:
-            self.retail_price = model.get_object_for_this_type(pk=self.object_id).retail_price
+            if self.pack and self.wholesale:
+                self.sold_price = model.get_object_for_this_type(pk=self.object_id).wholesale_price_pack
+            elif self.wholesale:
+                self.sold_price = model.get_object_for_this_type(pk=self.object_id).wholesale_price_item
+            else:
+                self.sold_price = model.get_object_for_this_type(pk=self.object_id).retail_price
 
         super(SellingContent, self).save(*args, **kwargs)
         update_balance(

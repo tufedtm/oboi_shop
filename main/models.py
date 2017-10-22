@@ -85,7 +85,6 @@ class VendorCode(models.Model):
 
     brand = models.ForeignKey(Brand, null=True, blank=True)
     vendor_code = models.CharField('Артикул', max_length=20, unique=True)
-    wholesale_price = models.PositiveIntegerField('Оптовая цена', default=0)
     width = models.FloatField('Ширина', default=1.06, help_text='м')
     length = models.FloatField('Длина', default=10.05, help_text='м')
     combination = models.ManyToManyField('self', verbose_name='Компаньоны', blank=True)
@@ -126,6 +125,8 @@ class TheConsignment(models.Model):
     vendor_code = models.ForeignKey(VendorCode, verbose_name='Артикул')
     the_consignment = models.CharField('Партия', max_length=20, blank=True)
     retail_price = models.PositiveIntegerField('Розничная цена', default=0)
+    wholesale_price_pack = models.PositiveSmallIntegerField('Оптовая цена (кор)', null=True, blank=True)
+    wholesale_price_item = models.PositiveSmallIntegerField('Оптовая цена (рул)', null=True, blank=True)
     count = models.PositiveSmallIntegerField('Количество рулонов')
     stillage = models.PositiveSmallIntegerField('Стеллаж', choices=STILLAGES, null=True, blank=True)
     cell = models.PositiveSmallIntegerField('Ячейка', choices=CELLS, null=True, blank=True)
@@ -154,43 +155,3 @@ class TheConsignment(models.Model):
         verbose_name = 'Партия'
         verbose_name_plural = 'Партии'
         unique_together = ('vendor_code', 'the_consignment')
-
-
-class Receipt(models.Model):
-    date = models.DateTimeField('Дата')
-
-    def delete(self, *args, **kwargs):
-        the_consignment_set = []
-        for receipt_content in self.receiptcontent_set.all():
-            the_consignment_set.append(receipt_content.the_consignment)
-        super(Receipt, self).delete(*args, **kwargs)
-        for the_consignment in the_consignment_set:
-            update_the_consignment(the_consignment)
-
-
-class Selling(models.Model):
-    date_create = models.DateTimeField('Дата составления')
-    paid = models.BooleanField('Оплачено?')
-    date_paid = models.DateTimeField('Дата оплаты', null=True, blank=True)
-    discount = models.PositiveSmallIntegerField('Скидка с суммы', null=True, blank=True)
-
-    def delete(self, *args, **kwargs):
-        the_consignment_set = []
-        for receipt_content in self.sellingcontent_set.all():
-            the_consignment_set.append(receipt_content.the_consignment)
-        super(Selling, self).delete(*args, **kwargs)
-        for the_consignment in the_consignment_set:
-            update_the_consignment(the_consignment)
-
-
-class PurchaseReturns(models.Model):
-    selling = models.ForeignKey(Selling)
-    date = models.DateTimeField('Дата')
-
-    def delete(self, *args, **kwargs):
-        the_consignment_set = []
-        for receipt_content in self.purchasereturnscontent_set.all():
-            the_consignment_set.append(receipt_content.the_consignment)
-        super(PurchaseReturns, self).delete(*args, **kwargs)
-        for the_consignment in the_consignment_set:
-            update_the_consignment(the_consignment)

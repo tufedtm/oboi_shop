@@ -29,6 +29,8 @@ class Glue(models.Model):
     brand = models.ForeignKey(Brand, verbose_name='Бренд')
     weight = models.PositiveSmallIntegerField('Вес пачки', help_text='гр')
     retail_price = models.PositiveSmallIntegerField('Розничная цена')
+    wholesale_price_pack = models.PositiveSmallIntegerField('Оптовая цена (кор)', null=True, blank=True)
+    wholesale_price_item = models.PositiveSmallIntegerField('Оптовая цена (шт)', null=True, blank=True)
     count = models.PositiveSmallIntegerField('Количество')
     pack = models.PositiveSmallIntegerField('Пачек в коробке')
     area = models.PositiveSmallIntegerField('На площадь')
@@ -42,5 +44,6 @@ class Glue(models.Model):
         )
 
     class Meta:
+        ordering = ('brand__name',)
         verbose_name = 'Клей'
         verbose_name_plural = 'Клеи'

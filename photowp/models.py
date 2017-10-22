@@ -49,6 +49,8 @@ class PhotoWP(models.Model):
     height = models.PositiveSmallIntegerField('Высота', choices=DIMENSIONS)
     count = models.PositiveSmallIntegerField('Количество')
     retail_price = models.PositiveIntegerField('Розничная цена')
+    wholesale_price_pack = models.PositiveSmallIntegerField('Оптовая цена (кор)', null=True, blank=True)
+    wholesale_price_item = models.PositiveSmallIntegerField('Оптовая цена (шт)', null=True, blank=True)
 
     def __str__(self):
         return '{0} {1}л {2}x{3}'.format(self.name, self.sheet, self.width, self.height)
