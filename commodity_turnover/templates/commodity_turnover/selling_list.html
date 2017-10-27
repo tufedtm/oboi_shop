@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <br>
+  {% for object in object_list %}
+    <p>
+      <a href="{% url 'commodity_turnover:sellingcontent_list' object.pk %}">{{ object }} {{ object.total_sum }}&#x20bd</a>
+    </p>
+  {% endfor %}
+{% endblock %}

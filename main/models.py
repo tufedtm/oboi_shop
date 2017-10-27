@@ -1,5 +1,7 @@
 from django.db import models
 
+from utils.managers import AvailableManager
+
 
 class Brand(models.Model):
     COUNTRIES_OF_ORIGIN = (
@@ -26,6 +28,7 @@ class Brand(models.Model):
         return '{0} ({1})'.format(self.company_of_origin, self.country_of_origin)
 
     class Meta:
+        ordering = ('name', 'country_of_origin')
         verbose_name = 'Бренд'
         verbose_name_plural = 'Бренды'
         unique_together = ('name', 'country_of_origin')
@@ -114,8 +117,8 @@ class VendorCode(models.Model):
         return self.vendor_code
 
     class Meta:
-        verbose_name = 'Артикул'
-        verbose_name_plural = 'Артикулы'
+        verbose_name = 'Обои (артикул)'
+        verbose_name_plural = 'Обои (артикулы)'
 
 
 class TheConsignment(models.Model):
@@ -132,6 +135,9 @@ class TheConsignment(models.Model):
     cell = models.PositiveSmallIntegerField('Ячейка', choices=CELLS, null=True, blank=True)
     showcase = models.BooleanField('На витрине?', default=True)
 
+    objects = models.Manager()
+    availables = AvailableManager()
+
     def __str__(self):
         if self.get_stillage():
             return '{0} [{1}] — {2}рул ({3})'.format(
@@ -143,6 +149,12 @@ class TheConsignment(models.Model):
         else:
             return '{0} [{1}] — {2}'.format(self.vendor_code, self.the_consignment, self.count)
 
+    def get_for_selling(self):
+        return '{0} [{1}]'.format(
+            self.vendor_code,
+            self.the_consignment
+        )
+
     def get_stillage(self):
         if self.cell:
             return '{0}/{1}'.format(self.stillage, self.cell)
@@ -152,6 +164,6 @@ class TheConsignment(models.Model):
             return ''
 
     class Meta:
-        verbose_name = 'Партия'
-        verbose_name_plural = 'Партии'
+        verbose_name = 'Обои (партия)'
+        verbose_name_plural = 'Обои (партии)'
         unique_together = ('vendor_code', 'the_consignment')

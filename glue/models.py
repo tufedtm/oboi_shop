@@ -1,5 +1,7 @@
 from django.db import models
 
+from utils.managers import AvailableManager
+
 
 class Brand(models.Model):
     name = models.CharField('Бренд', max_length=100)
@@ -36,6 +38,9 @@ class Glue(models.Model):
     area = models.PositiveSmallIntegerField('На площадь')
     glue_type = models.ManyToManyField(GlueType, verbose_name='Тип клея')
 
+    objects = models.Manager()
+    availables = AvailableManager()
+
     def __str__(self):
         return '{0} {1} {2}гр'.format(
             self.brand.name,
@@ -43,7 +48,20 @@ class Glue(models.Model):
             self.weight
         )
 
+    def get_for_selling(self):
+        return self.__str__()
+
+    def get_pack_count(self):
+        if self.pack:
+            count = int(divmod(self.count / self.pack, 1)[0])
+            if count:
+                return '({0})'.format(count)
+            else:
+                return ''
+        else:
+            return ''
+
     class Meta:
-        ordering = ('brand__name',)
+        ordering = ('brand__name', 'weight')
         verbose_name = 'Клей'
         verbose_name_plural = 'Клеи'

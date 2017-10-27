@@ -38,20 +38,21 @@ class Contractor(models.Model):
         return '{0} {1}'.format(self.first_name, self.last_name)
 
     class Meta:
+        ordering = ('first_name',)
         verbose_name = 'Контрагент'
         verbose_name_plural = 'Контрагенты'
 
 
 class Receipt(models.Model):
     shipper = models.ForeignKey(Contractor, verbose_name=Contractor._meta.verbose_name)
-    date = models.DateTimeField('Дата')
+    date = models.DateTimeField('Дата', default=timezone.now)
 
     def __str__(self):
         return '{0} {1} {2}'.format(self.shipper, self.date.date(), timezone.localtime(self.date).time())
 
     class Meta:
-        verbose_name = 'Поступление товара'
-        verbose_name_plural = 'Поступления товара'
+        verbose_name = 'Приход'
+        verbose_name_plural = 'Приходы'
 
 
 class ReceiptContent(models.Model):
@@ -77,13 +78,16 @@ class ReceiptContent(models.Model):
             self.object_id
         )
 
+    class Meta:
+        verbose_name = 'Позиция прихода'
+        verbose_name_plural = 'Позиции приходов'
+
 
 class Selling(models.Model):
     buyer = models.ForeignKey(Contractor, verbose_name=Contractor._meta.verbose_name)
-    date_create = models.DateTimeField('Дата составления')
-    paid = models.BooleanField('Оплачено?')
-    date_paid = models.DateTimeField('Дата оплаты', null=True, blank=True)
-    discount = models.PositiveSmallIntegerField('Скидка с суммы', null=True, blank=True)
+    date_create = models.DateTimeField('Дата составления', default=timezone.now)
+    date_paid = models.DateTimeField('Дата оплаты', default=timezone.now, null=True, blank=True)
+    comment = models.CharField('Комментарий', max_length=255, blank=True)
 
     def __str__(self):
         return '{0} {1} {2} {3}'.format(
@@ -94,8 +98,8 @@ class Selling(models.Model):
         )
 
     class Meta:
-        verbose_name = 'Реализация товара'
-        verbose_name_plural = 'Реалицазии товара'
+        verbose_name = 'Продажа'
+        verbose_name_plural = 'Продажи'
 
 
 class SellingContent(models.Model):
@@ -122,6 +126,9 @@ class SellingContent(models.Model):
             self.price
         )
 
+    def get_item(self):
+        return self.content_type.get_object_for_this_type(pk=self.object_id)
+
     def save(self, *args, **kwargs):
         model = ContentType.objects.get(model=self.content_type.model)
         if not self.pk:
@@ -138,17 +145,21 @@ class SellingContent(models.Model):
             self.object_id
         )
 
+    class Meta:
+        verbose_name = 'Позиция продажи'
+        verbose_name_plural = 'Позиции продаж'
+
 
 class PurchaseReturn(models.Model):
     selling = models.ForeignKey(Selling, verbose_name=Selling._meta.verbose_name)
-    date = models.DateTimeField('Дата')
+    date = models.DateTimeField('Дата', default=timezone.now)
 
     def __str__(self):
         return '{0} ({1})'.format(self.selling, timezone.localtime(self.date).time())
 
     class Meta:
-        verbose_name = 'Возврат товара'
-        verbose_name_plural = 'Возвраты товара'
+        verbose_name = 'Возврат'
+        verbose_name_plural = 'Возвраты'
 
 
 class PurchaseReturnContent(models.Model):
@@ -166,3 +177,7 @@ class PurchaseReturnContent(models.Model):
             ContentType.objects.get(model=self.selling_content.content_type.model),
             self.selling_content.object_id
         )
+
+    class Meta:
+        verbose_name = 'Позиция возврата'
+        verbose_name_plural = 'Позиции возвратов'

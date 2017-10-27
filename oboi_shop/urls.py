@@ -6,4 +6,5 @@ urlpatterns = [
     url(r'^', include('main.urls')),
     url(r'^', include('photowp.urls', namespace='photowp')),
     url(r'^', include('glue.urls', namespace='glue')),
+    url(r'^', include('commodity_turnover.urls', namespace='commodity_turnover')),
 ]

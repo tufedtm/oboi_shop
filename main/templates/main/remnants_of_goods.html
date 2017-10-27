@@ -1,49 +1,49 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <br>
-    <a href="{% url 'remnants_of_goods' %}?width=0.52&width=0.53">остатки 0,53</a>
-    <a href="{% url 'remnants_of_goods' %}?width=0.64&width=0.7">остатки 0,7</a>
-    <a href="{% url 'remnants_of_goods' %}?width=1&width=1.04&width=1.06">остатки 1,06</a>
+  <br><br>
+  <a href="{% url 'remnants_of_goods' %}?width=0.52&width=0.53">остатки 0,53</a>
+  <a href="{% url 'remnants_of_goods' %}?width=0.64&width=0.7">остатки 0,7</a>
+  <a href="{% url 'remnants_of_goods' %}?width=0&width=1&width=1.04&width=1.06">остатки 1,06</a>
 
-    <h1 align="center">{% now 'j F Y' %}</h1>
+  <h1 align="center">{% now 'j F Y' %}</h1>
 
-    <table border="1" cellspacing="0">
-        <tr>
-            <th>#</th>
-            <th>Артикул</th>
-            <th>Партия</th>
-            <th>м</th>
-            <th>Раппорт</th>
-            <th>Рулонов</th>
-            <th>Стеллаж</th>
-            <th>Витрина</th>
-            <th>Цена</th>
-            <th>Комбинация</th>
-        </tr>
-        {% for object in object_list %}
-            <tr>
-                <td align="center">{{ forloop.counter }}</td>
-                <td>{{ object.vendor_code }}</td>
-                <td>{{ object.the_consignment }}</td>
-                <td align="center">{{ object.vendor_code.width }}</td>
-                <td align="center">
-                    {% if object.vendor_code.rapport %}
-                        {{ object.vendor_code.rapport }}см
-                    {% endif %}
-                </td>
-                <td align="right">{{ object.count }}</td>
-                <td align="right">
-                    {{ object.get_stillage }}
-                </td>
-                <td align="center">{% if object.showcase == True %}&#x2713;{% endif %}</td>
-                <td align="center">{{ object.retail_price }}&#x20bd</td>
-                <td align="center">
-                    {% for foo in object.vendor_code.combination.all|dictsort:'vendor_code' %}
-                        {{ foo.vendor_code }}<br>
-                    {% endfor %}
-                </td>
-            </tr>
-        {% endfor %}
-    </table>
+  <table border="1" cellspacing="0">
+    <tr>
+      <th>#</th>
+      <th>Артикул</th>
+      <th>Партия</th>
+      <th>м</th>
+      <th>Раппорт</th>
+      <th>Рулонов</th>
+      <th>Стеллаж</th>
+      <th>Витрина</th>
+      <th>Цена</th>
+      <th>Комбинация</th>
+    </tr>
+    {% for object in object_list %}
+      <tr>
+        <td align="center">{{ forloop.counter }}</td>
+        <td>{{ object.vendor_code }}</td>
+        <td>{{ object.the_consignment }}</td>
+        <td align="center">{{ object.vendor_code.width }}</td>
+        <td align="center">
+          {% if object.vendor_code.rapport %}
+            {{ object.vendor_code.rapport }}см
+          {% endif %}
+        </td>
+        <td align="right">{{ object.count }}</td>
+        <td align="right">
+          {{ object.get_stillage }}
+        </td>
+        <td align="center">{% if object.showcase == True %}&#x2713;{% endif %}</td>
+        <td align="center">{{ object.retail_price }}&#x20bd</td>
+        <td align="center">
+          {% for foo in object.vendor_code.combination.all|dictsort:'vendor_code' %}
+            {{ foo.vendor_code }}<br>
+          {% endfor %}
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
 {% endblock %}

@@ -1,32 +1,33 @@
 <style>
-    * {
-        font-size: 14px;
-        font-family: monospace;
+  * {
+    font-size: 14px;
+    font-family: monospace;
+  }
+
+  table {
+    border-collapse: collapse;
+  }
+
+  th, td {
+    padding: 2px;
+    border: 1px solid #000;
+  }
+
+  @media print {
+    a, br {
+      display: none;
     }
 
-    table {
-        border-collapse: collapse;
+    body {
+      margin: 0;
     }
-
-    th, td {
-        padding: 2px;
-        border: 1px solid #000;
-    }
-
-    @media print {
-        a, br {
-            display: none;
-        }
-
-        body {
-            margin: 0;
-        }
-    }
+  }
 </style>
 
-<a href="{% url 'index' %}">главная</a>
+<a href="/">главная</a>
 <a href="{% url 'glue:remnants_of_glue' %}">клей</a>
 <a href="{% url 'remnants_of_goods' %}">обои</a>
 <a href="{% url 'photowp:remnants_of_photo' %}">фотообои</a>
+<a href="{% url 'commodity_turnover:selling_list' %}">продажи</a>
 
 {% block content %}{% endblock %}

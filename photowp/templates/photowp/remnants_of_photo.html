@@ -1,32 +1,39 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1 align="center">{% now 'j F Y' %}</h1>
+  <br><br>
+  {% for category in categories %}
+    <a href="{% url 'photowp:remnants_of_photo' %}?category={{ category.category }}">{{ category.get_category_display }}</a>
+  {% endfor %}
 
-    <table border="1" cellspacing="0">
+  {% for objects in object_list %}
+    <h1 align="center">
+      {% now 'j F Y' %}
+      <br>
+      {{ objects.category }}
+    </h1>
+
+    <table border="1" cellspacing="0" style="page-break-after: always">
+      <tr>
+        <th>#</th>
+        <th>Наименование</th>
+        <th>Листов</th>
+        <th>ШхВ</th>
+        <th>шт</th>
+        <th>Цена</th>
+      </tr>
+      {% for item in objects.items %}
         <tr>
-            <th>#</th>
-            <th>Наименование</th>
-            <th>Листов</th>
-            <th>ШхВ</th>
-            <th>шт</th>
-            <th>Цена</th>
+          <td align="center">{{ forloop.counter }}</td>
+          <td>
+            {{ item.get_name }}
+          </td>
+          <td align="center">{{ item.sheet }}</td>
+          <td align="center">{{ item.width }}x{{ item.height }}</td>
+          <td align="right">{{ item.count }}</td>
+          <td align="center">{{ item.retail_price }}&#x20bd</td>
         </tr>
-        {% for object in object_list %}
-            <tr>
-                <td align="center">{{ forloop.counter }}</td>
-                <td>
-                    {% if object.vendor_code %}
-                        {{ object.name }} ({{ object.vendor_code }})
-                    {% else %}
-                        {{ object.name }}
-                    {% endif %}
-                </td>
-                <td align="center">{{ object.sheet }}</td>
-                <td align="center">{{ object.width }}x{{ object.height }}</td>
-                <td align="right">{{ object.count }}</td>
-                <td align="center">{{ object.retail_price }}&#x20bd</td>
-            </tr>
-        {% endfor %}
+      {% endfor %}
     </table>
+  {% endfor %}
 {% endblock %}

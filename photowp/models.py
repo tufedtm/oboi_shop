@@ -1,5 +1,7 @@
 from django.db import models
 
+from utils.managers import AvailableManager
+
 
 class PhotoWP(models.Model):
     SHEETS = (
@@ -52,9 +54,22 @@ class PhotoWP(models.Model):
     wholesale_price_pack = models.PositiveSmallIntegerField('Оптовая цена (кор)', null=True, blank=True)
     wholesale_price_item = models.PositiveSmallIntegerField('Оптовая цена (шт)', null=True, blank=True)
 
+    objects = models.Manager()
+    availables = AvailableManager()
+
     def __str__(self):
         return '{0} {1}л {2}x{3}'.format(self.name, self.sheet, self.width, self.height)
 
+    def get_for_selling(self):
+        return '{0} [{1}]'.format(self.__str__(), self.get_category_display())
+
+    def get_name(self):
+        if self.vendor_code:
+            return '{0} ({1})'.format(self.name, self.vendor_code)
+        else:
+            return '{0}'.format(self.name)
+
     class Meta:
+        ordering = ('category', 'name')
         verbose_name = 'Фотообои'
         verbose_name_plural = 'Фотообои'
