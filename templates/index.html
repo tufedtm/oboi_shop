@@ -5,15 +5,15 @@
   <table>
     <tr>
       <th>Наименование</th>
-      <th>Цена</th>
       <th>Кол-во</th>
+      <th>Цена</th>
       <th>Сумма</th>
     </tr>
     {% for object in object_list %}
       <tr align="right">
         <td align="left">{{ object.get_item.get_for_selling }}</td>
-        <td>{{ object.price }}&#x20bd</td>
         <td>{{ object.count }}</td>
+        <td>{{ object.price }}&#x20bd</td>
         <td>{{ object.item_sum }}&#x20bd</td>
         <td>{{ object.selling_order.buyer }}</td>
         <td>{% if object.selling_order.date_paid %}&#x2713;{% endif %}</td>
