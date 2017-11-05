@@ -10,16 +10,18 @@
       <th>Сумма</th>
     </tr>
     {% for object in object_list %}
-      <tr>
-        <td>{{ object.get_item.get_for_selling }}</td>
-        <td>{{ object.price }}</td>
+      <tr align="right">
+        <td align="left">{{ object.get_item.get_for_selling }}</td>
+        <td>{{ object.price }}&#x20bd</td>
         <td>{{ object.count }}</td>
-        <td>{{ object.item_sum }}</td>
+        <td>{{ object.item_sum }}&#x20bd</td>
+        <td>{{ object.selling_order.buyer }}</td>
+        <td>{% if object.selling_order.date_paid %}&#x2713;{% endif %}</td>
       </tr>
     {% endfor %}
-    <tr>
-      <td colspan="3"><strong>Общая сумма</strong></td>
-      <td>{{ total_sum }}</td>
+    <tr style="font-weight: 700;">
+      <td colspan="3">Общая сумма</td>
+      <td>{{ total_sum }}&#x20bd</td>
     </tr>
   </table>
 {% endblock %}

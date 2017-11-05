@@ -90,12 +90,6 @@ DATABASES = {
 }
 
 
-# Password validation
-# https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
-
-AUTH_PASSWORD_VALIDATORS = []
-
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
@@ -114,5 +108,19 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = '../static'
+STATIC_ROOT = os.path.join(BASE_DIR, '../static')
+
 DATA_UPLOAD_MAX_NUMBER_FIELDS = None
+USE_THOUSAND_SEPARATOR = True
+
+if DEBUG:
+    INSTALLED_APPS.append('debug_toolbar')
+    INTERNAL_IPS = ('127.0.0.1',)
+    MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
+    DEBUG_TOOLBAR_PANELS = [
+        'debug_toolbar.panels.timer.TimerPanel',
+        'debug_toolbar.panels.sql.SQLPanel',
+    ]
+    DEBUG_TOOLBAR_CONFIG = {
+        'RENDER_PANELS': True
+    }

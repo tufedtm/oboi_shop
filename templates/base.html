@@ -1,33 +1,48 @@
-<style>
-  * {
-    font-size: 14px;
-    font-family: monospace;
-  }
-
-  table {
-    border-collapse: collapse;
-  }
-
-  th, td {
-    padding: 2px;
-    border: 1px solid #000;
-  }
-
-  @media print {
-    a, br {
-      display: none;
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Document</title>
+  <style>
+    * {
+      font-size: 14px;
+      font-family: monospace;
     }
 
-    body {
-      margin: 0;
+    table {
+      margin-top: 20px;
+      margin-bottom: 20px;
+      border-collapse: collapse;
     }
-  }
-</style>
+
+    th, td {
+      padding: 2px;
+      border: 1px solid #000;
+    }
+
+    @media print {
+      a, br {
+        display: none;
+      }
+
+      body {
+        margin: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
 
 <a href="/">главная</a>
 <a href="{% url 'glue:remnants_of_glue' %}">клей</a>
 <a href="{% url 'remnants_of_goods' %}">обои</a>
 <a href="{% url 'photowp:remnants_of_photo' %}">фотообои</a>
 <a href="{% url 'commodity_turnover:selling_list' %}">продажи</a>
+<a href="{% url 'commodity_turnover:report' %}">отчеты</a>
 
 {% block content %}{% endblock %}
+
+</body>
+</html>

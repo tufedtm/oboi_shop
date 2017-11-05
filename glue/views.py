@@ -5,4 +5,4 @@ from .models import Glue
 
 class RemnantsList(ListView):
     template_name = 'glue/remnants_of_glue.html'
-    model = Glue
+    queryset = Glue.availables.all()

@@ -1,6 +1,8 @@
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 
-from utils.managers import AvailableManager
+from commodity_turnover.models import ReceiptContent, SellingContent
+from .managers import GlueManager, GlueAvailableManager
 
 
 class Brand(models.Model):
@@ -38,8 +40,11 @@ class Glue(models.Model):
     area = models.PositiveSmallIntegerField('На площадь')
     glue_type = models.ManyToManyField(GlueType, verbose_name='Тип клея')
 
-    objects = models.Manager()
-    availables = AvailableManager()
+    receipt = GenericRelation(ReceiptContent)
+    selling = GenericRelation(SellingContent)
+
+    objects = GlueManager()
+    availables = GlueAvailableManager()
 
     def __str__(self):
         return '{0} {1} {2}гр'.format(

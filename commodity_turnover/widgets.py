@@ -5,16 +5,21 @@ from django.utils.safestring import mark_safe
 
 
 class ContentTypeSelect(forms.Select):
+    def __init__(self, model=None):
+        super(ContentTypeSelect, self).__init__()
+        self.ctypes = ContentType.objects.filter(
+            model__in=model.content_type.field.get_limit_choices_to()['model__in']
+        )
+
     def render(self, name, value, attrs=None, renderer=None):
         output = super(ContentTypeSelect, self).render(name, value, attrs, renderer)
         attrs['var_id'] = attrs['id'].replace('-', '_')
 
         choiceoutput = ' var %s_choice_urls = {' % attrs['var_id']
-        for choice in self.choices:
+        for ctype in self.ctypes:
             try:
-                ctype = ContentType.objects.get(pk=int(choice[0]))
                 choiceoutput += "'{0}' : '/{1}/{2}/{3}?_to_field={4}',".format(
-                    choice[0],
+                    ctype.pk,
                     site.name,
                     ctype.app_label,
                     ctype.model,

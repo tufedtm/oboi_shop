@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <br><br>
+  {% for choice in choices %}
+    <a href="{{ choice.link }}">{{ choice.title }}</a>
+  {% endfor %}
+
+  <table>
+    <tr>
+      <th colspan="7">Клей</th>
+    </tr>
+    <tr>
+      <th rowspan="2">наименование</th>
+      <th colspan="2">опт</th>
+      <th colspan="3">розница</th>
+    </tr>
+    <tr>
+      <th>штук</th>
+      <th>сумма</th>
+      <th>штук</th>
+      <th>сумма</th>
+      <th>продаж</th>
+    </tr>
+    {% for glue in glues %}
+      <tr align="right">
+        <td align="left">{{ glue }}</td>
+        <td>{{ glue.count_of_sales_w }}</td>
+        <td>
+          {% if glue.sum_w %}
+            {{ glue.sum_w }}&#x20bd
+          {% endif %}
+        </td>
+        <td>{{ glue.count_of_sales }}</td>
+        <td>
+          {% if glue.sum %}
+            {{ glue.sum }}&#x20bd
+          {% endif %}
+        </td>
+        <td>{{ glue.number_of_sales }}</td>
+      </tr>
+    {% endfor %}
+    <tr align="right" style="font-weight: 700;">
+      <td></td>
+      <td>{{ glues_total_count_of_sales_w }}</td>
+      <td>{{ glues_total_sum_w }}&#x20bd</td>
+      <td>{{ glues_total_count_of_sales }}</td>
+      <td>{{ glues_total_sum }}&#x20bd</td>
+      <td>{{ glues_total_number_of_sales }}</td>
+    </tr>
+  </table>
+
+  <table>
+    <tr>
+      <th colspan="7">Фотообои</th>
+    </tr>
+    <tr>
+      <th rowspan="2">наименование</th>
+      <th colspan="3">розница</th>
+    </tr>
+    <tr>
+      <th>штук</th>
+      <th>сумма</th>
+    </tr>
+    {% for photowp in photowps %}
+      <tr align="right">
+        <td align="left">{{ photowp.get_for_selling }}</td>
+        <td>{{ photowp.count_of_sales }}</td>
+        <td>
+          {% if photowp.sum %}
+            {{ photowp.sum }}&#x20bd
+          {% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+    <tr align="right" style="font-weight:700;">
+      <td></td>
+      <td>{{ photowps_total_count_of_sales }}</td>
+      <td>{{ photowps_total_sum }}&#x20bd</td>
+    </tr>
+  </table>
+
+  <table>
+    <tr>
+      <th colspan="7">Обои</th>
+    </tr>
+    <tr>
+      <th rowspan="2">наименование</th>
+      <th colspan="3">розница</th>
+    </tr>
+    <tr>
+      <th>штук</th>
+      <th>сумма</th>
+      <th>продаж</th>
+    </tr>
+    {% for wp in wps %}
+      <tr align="right">
+        <td align="left">{{ wp.vendor_code }} [{{ wp.the_consignment }}]</td>
+        <td>{{ wp.count_of_sales }}</td>
+        <td>
+          {% if wp.sum %}
+            {{ wp.sum }}&#x20bd
+          {% endif %}
+        </td>
+        <td>{{ wp.number_of_sales }}</td>
+      </tr>
+    {% endfor %}
+    <tr align="right" style="font-weight: 700;">
+      <td></td>
+      <td>{{ wps_total_count_of_sales }}</td>
+      <td>{{ wps_total_sum }}&#x20bd</td>
+      <td>{{ wps_total_number_of_sales }}</td>
+    </tr>
+  </table>
+{% endblock %}

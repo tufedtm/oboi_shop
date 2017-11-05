@@ -1,6 +1,8 @@
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 
-from utils.managers import AvailableManager
+from commodity_turnover.models import SellingContent
+from .managers import VendorCodeManager, TheConsignmentManager, TheConsignmentAvailableManager
 
 
 class Brand(models.Model):
@@ -113,6 +115,8 @@ class VendorCode(models.Model):
     gluing = models.CharField('Наклеивание', max_length=2, choices=GLUING, default='ОК', blank=True)
     removal = models.PositiveSmallIntegerField('Снятие со стены', choices=REMOVAL, default=1, null=True, blank=True)
 
+    objects = VendorCodeManager()
+
     def __str__(self):
         return self.vendor_code
 
@@ -135,8 +139,10 @@ class TheConsignment(models.Model):
     cell = models.PositiveSmallIntegerField('Ячейка', choices=CELLS, null=True, blank=True)
     showcase = models.BooleanField('На витрине?', default=True)
 
-    objects = models.Manager()
-    availables = AvailableManager()
+    sellings = GenericRelation(SellingContent)
+
+    objects = TheConsignmentManager()
+    availables = TheConsignmentAvailableManager()
 
     def __str__(self):
         if self.get_stillage():

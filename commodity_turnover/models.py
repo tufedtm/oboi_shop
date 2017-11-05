@@ -3,6 +3,12 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils import timezone
 
+from .managers import (
+    ReceiptManager, ReceiptContentManager,
+    SellingManager, SellingContentManager,
+    PurchaseReturnManager, PurchaseReturnContentManager
+)
+
 
 def update_balance(model, object_id):
     goods = model.get_object_for_this_type(pk=object_id)
@@ -47,6 +53,8 @@ class Receipt(models.Model):
     shipper = models.ForeignKey(Contractor, verbose_name=Contractor._meta.verbose_name)
     date = models.DateTimeField('Дата', default=timezone.now)
 
+    objects = ReceiptManager()
+
     def __str__(self):
         return '{0} {1} {2}'.format(self.shipper, self.date.date(), timezone.localtime(self.date).time())
 
@@ -68,6 +76,8 @@ class ReceiptContent(models.Model):
     count = models.PositiveSmallIntegerField('Закуплено')
     price = models.PositiveIntegerField('Закупочная цена')
 
+    objects = ReceiptContentManager()
+
     def __str__(self):
         return '{0} — {1} — {2}\u20BD'.format(self.content_object, self.count, self.price)
 
@@ -88,6 +98,8 @@ class Selling(models.Model):
     date_create = models.DateTimeField('Дата составления', default=timezone.now)
     date_paid = models.DateTimeField('Дата оплаты', default=timezone.now, null=True, blank=True)
     comment = models.CharField('Комментарий', max_length=255, blank=True)
+
+    objects = SellingManager()
 
     def __str__(self):
         return '{0} {1} {2} {3}'.format(
@@ -119,11 +131,12 @@ class SellingContent(models.Model):
     complement = models.BooleanField('Докупка', default=False)
     sold_price = models.PositiveIntegerField('Розничная цена', editable=False)
 
+    objects = SellingContentManager()
+
     def __str__(self):
-        return '{0} — {1} - {2}\u20BD'.format(
-            self.selling_order,
+        return '{0} - {1}\u20BD'.format(
             self.content_type.get_object_for_this_type(pk=self.object_id),
-            self.price
+            self.count * self.price
         )
 
     def get_item(self):
@@ -154,6 +167,8 @@ class PurchaseReturn(models.Model):
     selling = models.ForeignKey(Selling, verbose_name=Selling._meta.verbose_name)
     date = models.DateTimeField('Дата', default=timezone.now)
 
+    objects = PurchaseReturnManager()
+
     def __str__(self):
         return '{0} ({1})'.format(self.selling, timezone.localtime(self.date).time())
 
@@ -167,6 +182,8 @@ class PurchaseReturnContent(models.Model):
     selling_content = models.ForeignKey(SellingContent, verbose_name=SellingContent._meta.verbose_name)
     count = models.PositiveSmallIntegerField('Количество')
     reason = models.CharField('Причина', max_length=500)
+
+    objects = PurchaseReturnContentManager()
 
     def __str__(self):
         return '{0} — {1}'.format(self.purchase_returns, self.count)
