@@ -151,7 +151,7 @@ def date_hierarchy(request):
         context['photowps'] = OrderedDict(
             (o.pk, o) for o in PhotoWP.objects.filter(pk__in=photowp_sells_ids).order_by('category', 'name'))
         for item in \
-            photowp_sells.filter(wholesale=False, pack=False).values('object_id') \
+            photowp_sells.values('object_id') \
                 .annotate(count_of_sales=Sum('count')) \
                 .annotate(sum=Sum(F('count') * F('price'), output_field=IntegerField())).order_by('object_id'):
             photowp = context['photowps'][item['object_id']]
@@ -172,7 +172,7 @@ def date_hierarchy(request):
         context['wps'] = OrderedDict(
             (o.pk, o) for o in TheConsignment.objects.filter(pk__in=wp_sells_ids).order_by('vendor_code__vendor_code'))
         for item in \
-            wp_sells.filter(wholesale=False, pack=False).values('object_id') \
+            wp_sells.values('object_id') \
                 .annotate(number_of_sales=Count('id')) \
                 .annotate(count_of_sales=Sum('count')) \
                 .annotate(sum=Sum(F('count') * F('price'), output_field=IntegerField())).order_by('object_id'):
