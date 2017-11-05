@@ -86,11 +86,12 @@
     </tr>
     <tr>
       <th rowspan="2">наименование</th>
-      <th colspan="3">розница</th>
+      <th colspan="4">розница</th>
     </tr>
     <tr>
       <th>штук</th>
       <th>сумма</th>
+      <th>прибыль</th>
       <th>продаж</th>
     </tr>
     {% for wp in wps %}
@@ -102,6 +103,11 @@
             {{ wp.sum }}&#x20bd
           {% endif %}
         </td>
+        <td>
+          {% if wp.profit %}
+            {{ wp.profit }}&#x20bd
+          {% endif %}
+        </td>
         <td>{{ wp.number_of_sales }}</td>
       </tr>
     {% endfor %}
@@ -109,6 +115,7 @@
       <td></td>
       <td>{{ wps_total_count_of_sales }}</td>
       <td>{{ wps_total_sum }}&#x20bd</td>
+      <td>{{ wps_total_profit }}&#x20bd</td>
       <td>{{ wps_total_number_of_sales }}</td>
     </tr>
   </table>

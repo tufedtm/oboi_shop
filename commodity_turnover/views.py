@@ -170,7 +170,9 @@ def date_hierarchy(request):
                 pass
 
         context['wps'] = OrderedDict(
-            (o.pk, o) for o in TheConsignment.objects.filter(pk__in=wp_sells_ids).order_by('vendor_code__vendor_code'))
+            (o.pk, o) for o in TheConsignment.objects.filter(pk__in=wp_sells_ids).order_by('vendor_code__vendor_code')
+        )
+
         for item in \
             wp_sells.values('object_id') \
                 .annotate(number_of_sales=Count('id')) \
@@ -180,19 +182,31 @@ def date_hierarchy(request):
             wp.number_of_sales = item['number_of_sales']
             wp.count_of_sales = item['count_of_sales']
             wp.sum = item['sum']
-
-        context['wps'] = [v for v in context['wps'].values()]
+            wp.profit = item['count_of_sales'] * 100
 
         context['wps_total_sum'] = 0
         context['wps_total_count_of_sales'] = 0
         context['wps_total_number_of_sales'] = 0
-        for i in context['wps']:
+        for i in context['wps'].values():
             try:
                 context['wps_total_sum'] += i.sum
                 context['wps_total_count_of_sales'] += i.count_of_sales
                 context['wps_total_number_of_sales'] += i.number_of_sales
             except AttributeError:
                 pass
+
+        for item in wp_recs.values():
+            wp = context['wps'][item.object_id]
+            wp.profit = wp.sum - item.price * wp.count_of_sales
+
+        context['wps_total_profit'] = 0
+        for i in context['wps'].values():
+            try:
+                context['wps_total_profit'] += i.profit
+            except AttributeError:
+                pass
+
+        context['wps'] = [v for v in context['wps'].values()]
 
     def link(filters):
         for k, v in filters.items():
