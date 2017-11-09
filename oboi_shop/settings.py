@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+import raven
 import socket
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -40,6 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'raven.contrib.django.raven_compat',
 
     'glue',
     'main',
@@ -115,6 +118,10 @@ STATIC_ROOT = os.path.join(BASE_DIR, '../static')
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = None
 USE_THOUSAND_SEPARATOR = True
+
+RAVEN_CONFIG = {
+    'dsn': 'https://5a58704c56714c91a3ba425a8d5754b6:d323b56ba213487ba5bd4ae18365de7e@sentry.io/242719',
+}
 
 if DEBUG:
     INSTALLED_APPS.append('debug_toolbar')

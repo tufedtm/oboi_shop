@@ -70,6 +70,7 @@ class ReceiptContent(models.Model):
         verbose_name='Тип товара',
         on_delete=models.CASCADE,
         limit_choices_to={'model__in': ('theconsignment', 'photowp', 'glue')},
+        default=10,
     )
     object_id = models.PositiveIntegerField('Товар')
     content_object = GenericForeignKey('content_type', 'object_id')
@@ -102,12 +103,23 @@ class Selling(models.Model):
     objects = SellingManager()
 
     def __str__(self):
-        return '{0} {1} {2} {3}'.format(
+        return '{0} {1} {2} {3} — {4}\u20BD'.format(
             self.pk,
             self.buyer,
             self.date_create.date(),
-            timezone.localtime(self.date_create).time()
+            timezone.localtime(self.date_create).time(),
+            self.get_sum(),
         )
+
+    def get_sum(self):
+        total_sum = 0
+        for sc in self.sellingcontent_set.all():
+            total_sum += sc.get_sum()
+        return total_sum
+
+    def is_paid(self):
+        if self.date_paid:
+            return '\u2713'
 
     class Meta:
         verbose_name = 'Продажа'
@@ -121,6 +133,7 @@ class SellingContent(models.Model):
         verbose_name='Тип товара',
         on_delete=models.CASCADE,
         limit_choices_to={'model__in': ('theconsignment', 'photowp', 'glue')},
+        default=10,
     )
     object_id = models.PositiveIntegerField('Товар')
     content_object = GenericForeignKey('content_type', 'object_id')
@@ -134,13 +147,16 @@ class SellingContent(models.Model):
     objects = SellingContentManager()
 
     def __str__(self):
-        return '{0} - {1}\u20BD'.format(
+        return '{0} — {1}\u20BD'.format(
             self.content_type.get_object_for_this_type(pk=self.object_id),
-            self.count * self.price
+            self.get_sum(),
         )
 
     def get_item(self):
         return self.content_type.get_object_for_this_type(pk=self.object_id)
+
+    def get_sum(self):
+        return self.count * self.price
 
     def save(self, *args, **kwargs):
         model = ContentType.objects.get(model=self.content_type.model)

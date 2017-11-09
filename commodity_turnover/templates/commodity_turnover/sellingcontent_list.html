@@ -15,12 +15,12 @@
         <td align="left">{{ object.get_item.get_for_selling }}</td>
         <td>{{ object.count }}</td>
         <td>{{ object.price }}&#x20bd</td>
-        <td>{{ object.item_sum }}&#x20bd</td>
+        <td>{{ object.get_sum }}&#x20bd</td>
       </tr>
     {% endfor %}
     <tr>
       <td colspan="3"><strong>Общая сумма</strong></td>
-      <td>{{ selling.total_sum }}&#x20bd</td>
+      <td>{{ selling.get_sum }}&#x20bd</td>
     </tr>
   </table>
 

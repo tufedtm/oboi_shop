@@ -31,6 +31,7 @@ class GlueType(models.Model):
 
 class Glue(models.Model):
     brand = models.ForeignKey(Brand, verbose_name='Бренд')
+    warehouse_str = models.CharField('Наименование для склада', max_length=255, blank=True)
     weight = models.PositiveSmallIntegerField('Вес пачки', help_text='гр')
     retail_price = models.PositiveSmallIntegerField('Розничная цена')
     wholesale_price_pack = models.PositiveSmallIntegerField('Оптовая цена (кор)', null=True, blank=True)
@@ -49,7 +50,7 @@ class Glue(models.Model):
     def __str__(self):
         return '{0} {1} {2}гр'.format(
             self.brand.name,
-            ', '.join((obj.name for obj in self.glue_type.all())),
+            self.warehouse_str,
             self.weight
         )
 
@@ -58,7 +59,7 @@ class Glue(models.Model):
 
     def get_pack_count(self):
         if self.pack:
-            count = int(divmod(self.count / self.pack, 1)[0])
+            count = int(self.count / self.pack)
             if count:
                 return '({0})'.format(count)
             else:
@@ -67,6 +68,6 @@ class Glue(models.Model):
             return ''
 
     class Meta:
-        ordering = ('brand__name', 'weight')
+        ordering = ('brand__name', 'warehouse_str')
         verbose_name = 'Клей'
         verbose_name_plural = 'Клеи'

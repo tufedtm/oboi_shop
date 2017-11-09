@@ -37,7 +37,7 @@
           {{ object.get_stillage }}
         </td>
         <td align="center">{% if object.showcase == True %}&#x2713;{% endif %}</td>
-        <td align="center">{{ object.retail_price }}&#x20bd</td>
+        <td align="right">{{ object.retail_price }}&#x20bd</td>
         <td align="center">
           {% for foo in object.vendor_code.combination.all|dictsort:'vendor_code' %}
             {{ foo.vendor_code }}<br>

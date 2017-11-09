@@ -4,7 +4,7 @@
   <br>
   {% for object in object_list %}
     <p>
-      <a href="{% url 'commodity_turnover:sellingcontent_list' object.pk %}">{{ object }} {{ object.total_sum }}&#x20bd</a>
+      <a href="{% url 'commodity_turnover:sellingcontent_list' object.pk %}">{{ object }}</a>
     </p>
   {% endfor %}
 {% endblock %}

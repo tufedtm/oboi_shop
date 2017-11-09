@@ -14,7 +14,7 @@ class ReceiptContentManager(models.Manager):
 class SellingManager(models.Manager):
     def get_queryset(self):
         return super(SellingManager, self).get_queryset() \
-            .select_related('buyer')
+            .select_related('buyer').prefetch_related('sellingcontent_set')
 
 
 class SellingContentManager(models.Manager):

@@ -20,23 +20,15 @@ class SellingContentList(ListView):
     def get_context_data(self, **kwargs):
         context = super(SellingContentList, self).get_context_data(**kwargs)
 
-        context['selling'] = Selling.objects.annotate(total_sum=Sum(
-            F('sellingcontent__count') * F('sellingcontent__price'), output_field=IntegerField()
-        )).get(pk=self.kwargs['pk'])
-
-        context['object_list'] = SellingContent.objects.filter(selling_order_id=self.kwargs['pk']).annotate(
-            item_sum=Sum(F('count') * F('price'), output_field=IntegerField())
-        )
+        context['selling'] = Selling.objects.get(pk=self.kwargs['pk'])
+        context['object_list'] = SellingContent.objects.filter(selling_order_id=self.kwargs['pk'])
 
         return context
 
 
 class SellingList(ListView):
     def get_queryset(self):
-        return Selling.objects.annotate(total_sum=Sum(
-            F('sellingcontent__count') * F('sellingcontent__price'), output_field=IntegerField()
-        )) \
-            .order_by('-date_create')
+        return Selling.objects.order_by('-date_create')
 
 
 class SellingTodayList(ListView):
@@ -49,17 +41,17 @@ class SellingTodayList(ListView):
             selling_order__date_create__year=today.year,
             selling_order__date_create__month=today.month,
             selling_order__date_create__day=today.day,
-        ).annotate(
-            item_sum=Sum(F('count') * F('price'), output_field=IntegerField())
         )
 
     def get_context_data(self, **kwargs):
         context = super(SellingTodayList, self).get_context_data(**kwargs)
 
         context['total_sum'] = 0
+        context['wp_count'] = 0
         for item in context['object_list']:
-            context['total_sum'] += item.item_sum
-
+            context['total_sum'] += item.get_sum()
+            if item.content_type_id == 10:
+                context['wp_count'] += item.count
         return context
 
 
@@ -207,6 +199,19 @@ def date_hierarchy(request):
                 pass
 
         context['wps'] = [v for v in context['wps'].values()]
+        context['byers'] = queryset.filter(
+            date_create__year=year_lookup,
+            date_create__month=month_lookup
+        ).count()
+        context['total_sum'] = sum((
+            context['glues_total_sum'],
+            context['glues_total_sum_w'],
+            context['photowps_total_sum'],
+            context['wps_total_sum'],
+        ))
+        context['profit_sum'] = sum((
+            context['wps_total_profit'],
+        ))
 
     def link(filters):
         for k, v in filters.items():

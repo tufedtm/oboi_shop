@@ -17,6 +17,10 @@ class ReceiptInline(admin.TabularInline):
 class ReceiptAdmin(CommodityAdmin):
     inlines = (ReceiptInline,)
 
+    def render_change_form(self, request, context, *args, **kwargs):
+        context['adminform'].form.fields['shipper'].queryset = Contractor.objects.filter(contractor_type=True)
+        return super(ReceiptAdmin, self).render_change_form(request, context, args, kwargs)
+
 
 class SellingInline(admin.TabularInline):
     extra = 4
@@ -34,6 +38,10 @@ class SellingAdmin(CommodityAdmin):
         }),
     )
     inlines = (SellingInline,)
+
+    def render_change_form(self, request, context, *args, **kwargs):
+        context['adminform'].form.fields['buyer'].queryset = Contractor.objects.filter(contractor_type=False)
+        return super(SellingAdmin, self).render_change_form(request, context, args, kwargs)
 
 
 class PurchaseReturnInline(admin.TabularInline):
