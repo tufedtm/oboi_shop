@@ -52,6 +52,7 @@ class SellingTodayList(ListView):
             context['total_sum'] += item.get_sum()
             if item.content_type_id == 10:
                 context['wp_count'] += item.count
+
         return context
 
 
@@ -220,6 +221,7 @@ def date_hierarchy(request):
                     del params[k]
             else:
                 params[k] = v
+
         return '?{0}'.format(urlencode(sorted(params.items())))
 
     if not year_lookup:

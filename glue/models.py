@@ -48,10 +48,9 @@ class Glue(models.Model):
     availables = GlueAvailableManager()
 
     def __str__(self):
-        return '{0} {1} {2}гр'.format(
+        return '{0} {1}'.format(
             self.brand.name,
             self.warehouse_str,
-            self.weight
         )
 
     def get_for_selling(self):
