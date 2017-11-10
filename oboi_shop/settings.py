@@ -25,10 +25,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'o27531usngo9i3(d$-1$-7v8qel26!bxspz57y*&k@xb2h)ab_'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-if socket.gethostname() in ('ttm-mint-home',):
-    DEBUG = True
-else:
-    DEBUG = False
+DEBUG = True if socket.gethostname() in ('ttm-mint-home',) else False
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', '163.172.172.108']
 
@@ -124,12 +121,15 @@ RAVEN_CONFIG = {
 }
 
 if DEBUG:
-    INSTALLED_APPS.append('debug_toolbar')
+    INSTALLED_APPS.extend(('debug_toolbar', 'template_profiler_panel', 'template_timings_panel'))
     INTERNAL_IPS = ('127.0.0.1',)
     MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
     DEBUG_TOOLBAR_PANELS = [
         'debug_toolbar.panels.timer.TimerPanel',
         'debug_toolbar.panels.sql.SQLPanel',
+        'debug_toolbar.panels.templates.TemplatesPanel',
+        'template_profiler_panel.panels.template.TemplateProfilerPanel',
+        'template_timings_panel.panels.TemplateTimings.TemplateTimings',
     ]
     DEBUG_TOOLBAR_CONFIG = {
         'RENDER_PANELS': True

@@ -48,8 +48,7 @@ class Glue(models.Model):
     availables = GlueAvailableManager()
 
     def __str__(self):
-        return '{0} {1}'.format(
-            self.brand.name,
+        return '{0}'.format(
             self.warehouse_str,
         )
 
@@ -67,6 +66,6 @@ class Glue(models.Model):
             return ''
 
     class Meta:
-        ordering = ('brand__name', 'warehouse_str')
+        ordering = ('warehouse_str',)
         verbose_name = 'Клей'
         verbose_name_plural = 'Клеи'

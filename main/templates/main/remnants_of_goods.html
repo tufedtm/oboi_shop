@@ -13,7 +13,7 @@
       <th>#</th>
       <th>Артикул</th>
       <th>Партия</th>
-      <th>м</th>
+      <th class="no-print">м</th>
       <th>Раппорт</th>
       <th>Рулонов</th>
       <th>Стеллаж</th>
@@ -26,7 +26,7 @@
         <td align="center">{{ forloop.counter }}</td>
         <td>{{ object.vendor_code }}</td>
         <td>{{ object.the_consignment }}</td>
-        <td align="center">{{ object.vendor_code.width }}</td>
+        <td class="no-print" align="center">{{ object.vendor_code.width }}</td>
         <td align="center">
           {% if object.vendor_code.rapport %}
             {{ object.vendor_code.rapport }}см
@@ -43,7 +43,25 @@
             {{ foo.vendor_code }}<br>
           {% endfor %}
         </td>
+        <td class="no-print" align="right">{{ object.get_sum }}&#x20bd</td>
       </tr>
     {% endfor %}
+  </table>
+
+  <table class="no-print">
+    <tr align="center">
+      <td>метраж</td>
+      <td>площадь</td>
+      <td>рулонов</td>
+      <td>сумма</td>
+      <td>прибыль</td>
+    </tr>
+    <tr align="center" style="vertical-align: baseline">
+      <td>{{ total_footage }}км</td>
+      <td>{{ total_square }}км<sup>2</sup></td>
+      <td>{{ total_rolls }}</td>
+      <td>{{ total_sum }}&#x20bd</td>
+      <td>{{ total_profit }}&#x20bd</td>
+    </tr>
   </table>
 {% endblock %}

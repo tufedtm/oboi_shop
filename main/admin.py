@@ -11,7 +11,14 @@ class VendorCodeAdmin(admin.ModelAdmin):
         'basis_material', 'covering_material', 'moisture_resistance', 'resistance_to_light', 'gluing', 'removal'
     )
     list_filter = ('width',)
+    list_per_page = 1000
     ordering = ('width', 'vendor_code')
+
+    def render_change_form(self, request, context, *args, **kwargs):
+        if context['original']:
+            context['adminform'].form.fields['combination'].queryset = \
+                VendorCode.objects.filter(width=context['original'].width).order_by('vendor_code')
+        return super(VendorCodeAdmin, self).render_change_form(request, context, args, kwargs)
 
 
 @admin.register(TheConsignment)

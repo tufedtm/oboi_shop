@@ -161,6 +161,9 @@ class TheConsignment(models.Model):
             self.the_consignment
         )
 
+    def get_sum(self):
+        return self.count * self.retail_price
+
     def get_stillage(self):
         if self.cell:
             return '{0}/{1}'.format(self.stillage, self.cell)

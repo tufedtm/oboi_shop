@@ -7,7 +7,6 @@
     <tr>
       <th>#</th>
       <th>Наименование</th>
-      <th>Вес</th>
       <th>м<sup>2</sup></th>
       <th>Остаток</th>
       <th>Цена</th>
@@ -15,8 +14,7 @@
     {% for object in object_list %}
       <tr>
         <td align="center">{{ forloop.counter }}</td>
-        <td>{{ object.brand.name }} {{ object.warehouse_str }}</td>
-        <td align="center">{{ object.weight }}гр</td>
+        <td>{{ object.warehouse_str }}</td>
         <td align="center">{{ object.area }}м<sup>2</sup></td>
         <td align="right">{{ object.count }}{{ object.get_pack_count }}</td>
         <td align="center">{{ object.retail_price }}&#x20bd</td>

@@ -1,4 +1,6 @@
 Django==1.11.6
 django-debug-toolbar==1.8
+django-debug-toolbar-template-profiler==1.0.2
+django-debug-toolbar-template-timings==0.7
 psycopg2==2.7.3.2
 raven==6.3.0
