@@ -32,11 +32,7 @@ class SellingInline(admin.TabularInline):
 @admin.register(Selling)
 class SellingAdmin(CommodityAdmin):
     date_hierarchy = 'date_create'
-    fieldsets = (
-        (None, {
-            'fields': ('buyer', ('date_create', 'date_paid'), 'comment'),
-        }),
-    )
+    fields = ('buyer', ('date_create', 'date_paid'), 'comment')
     inlines = (SellingInline,)
 
     def render_change_form(self, request, context, *args, **kwargs):

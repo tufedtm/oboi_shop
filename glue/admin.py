@@ -12,7 +12,7 @@ class BrandAdmin(admin.ModelAdmin):
 
 @admin.register(Glue)
 class GlueAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'count', 'retail_price')
+    list_display = ('__str__', 'count', 'retail_price', 'wholesale_price_pack')
 
 
 @admin.register(GlueType)

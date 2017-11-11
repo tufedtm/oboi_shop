@@ -91,76 +91,144 @@ def date_hierarchy(request):
         wp_sells_ids = wp_sells.values_list('object_id')
         photowp_sells_ids = photowp_sells.values_list('object_id')
 
-        glue_recs = OrderedDict(
-            (o.pk, o) for o in receipts.filter(content_type_id=glue.pk, object_id__in=glue_sells_ids)
-        )
-        wp_recs = OrderedDict(
-            (o.pk, o) for o in receipts.filter(content_type_id=wp.pk, object_id__in=wp_sells_ids)
-        )
-        photowp_recs = OrderedDict(
-            (o.pk, o) for o in receipts.filter(content_type_id=photowp.pk, object_id__in=photowp_sells_ids)
-        )
+        glue_recs = receipts.filter(content_type_id=glue.pk, object_id__in=glue_sells_ids)
+        photowp_recs = receipts.filter(content_type_id=photowp.pk, object_id__in=photowp_sells_ids)
+        wp_recs = receipts.filter(content_type_id=wp.pk, object_id__in=wp_sells_ids)
+
+        ###
+        # calculate total for glues
+        ###
 
         context['glues'] = OrderedDict((o.pk, o) for o in Glue.objects.filter(pk__in=glue_sells_ids))
         for item in \
-            glue_sells.filter(wholesale=False, pack=False).values('object_id') \
+            glue_sells.filter(wholesale=False, pack=False) \
+                .values('object_id') \
                 .annotate(number_of_sales=Count('id')) \
                 .annotate(count_of_sales=Sum('count')) \
-                .annotate(sum=Sum(F('count') * F('price'), output_field=IntegerField())).order_by('object_id'):
+                .annotate(sum=Sum(F('count') * F('price'), output_field=IntegerField())) \
+                .order_by('object_id'):
             glue = context['glues'][item['object_id']]
             glue.number_of_sales = item['number_of_sales']
             glue.count_of_sales = item['count_of_sales']
             glue.sum = item['sum']
 
+        for item in glue_recs:
+            try:
+                glue = context['glues'][item.object_id]
+                glue.profit = glue.sum - item.price * glue.count_of_sales
+            except AttributeError:
+                pass
+
         for item in \
-            glue_sells.filter(wholesale=True, pack=True).values('object_id') \
+            glue_sells.filter(wholesale=True, pack=True) \
+                .values('object_id') \
                 .annotate(count_of_sales=Sum('count')) \
-                .annotate(sum=Sum(F('count') * F('price'), output_field=IntegerField())).order_by('object_id'):
+                .annotate(sum=Sum(F('count') * F('price'), output_field=IntegerField())) \
+                .order_by('object_id'):
             glue = context['glues'][item['object_id']]
             glue.count_of_sales_w = item['count_of_sales']
             glue.sum_w = item['sum']
 
+        for item in glue_recs:
+            try:
+                glue = context['glues'][item.object_id]
+                glue.profit_w = glue.sum_w - item.price * glue.count_of_sales_w * glue.pack
+            except AttributeError:
+                pass
+
         context['glues'] = [v for v in context['glues'].values()]
 
         context['glues_total_sum'] = 0
+        context['glues_total_profit'] = 0
         context['glues_total_count_of_sales'] = 0
         context['glues_total_number_of_sales'] = 0
         for i in context['glues']:
             try:
                 context['glues_total_sum'] += i.sum
+                context['glues_total_profit'] += i.profit
                 context['glues_total_count_of_sales'] += i.count_of_sales
                 context['glues_total_number_of_sales'] += i.number_of_sales
             except AttributeError:
                 pass
+
         context['glues_total_sum_w'] = 0
+        context['glues_total_profit_w'] = 0
         context['glues_total_count_of_sales_w'] = 0
         for i in context['glues']:
             try:
                 context['glues_total_sum_w'] += i.sum_w
+                context['glues_total_profit_w'] += i.profit_w
                 context['glues_total_count_of_sales_w'] += i.count_of_sales_w
             except AttributeError:
                 pass
 
+        ###
+        # calculate total for photomurals
+        ###
+
         context['photowps'] = OrderedDict(
             (o.pk, o) for o in PhotoWP.objects.filter(pk__in=photowp_sells_ids).order_by('category', 'name'))
         for item in \
-            photowp_sells.values('object_id') \
+            photowp_sells.filter(wholesale=False, pack=False) \
+                .values('object_id') \
                 .annotate(count_of_sales=Sum('count')) \
-                .annotate(sum=Sum(F('count') * F('price'), output_field=IntegerField())).order_by('object_id'):
+                .annotate(sum=Sum(F('count') * F('price'), output_field=IntegerField())) \
+                .order_by('object_id'):
             photowp = context['photowps'][item['object_id']]
             photowp.count_of_sales = item['count_of_sales']
             photowp.sum = item['sum']
 
+        for item in photowp_recs:
+            try:
+                photowp = context['photowps'][item.object_id]
+                photowp.profit = photowp.sum - item.price * photowp.count_of_sales
+            except AttributeError:
+                pass
+
+        for item in \
+            photowp_sells.filter(wholesale=True, pack=False) \
+                .values('object_id') \
+                .annotate(count_of_sales=Sum('count')) \
+                .annotate(sum=Sum(F('count') * F('price'), output_field=IntegerField())) \
+                .order_by('object_id'):
+            photowp = context['photowps'][item['object_id']]
+            photowp.count_of_sales_w = item['count_of_sales']
+            photowp.sum_w = item['sum']
+
+        for item in photowp_recs:
+            try:
+                photowp = context['photowps'][item.object_id]
+                photowp.profit_w = photowp.sum_w - item.price * photowp.count_of_sales_w
+            except AttributeError:
+                pass
+
         context['photowps'] = [v for v in context['photowps'].values()]
 
         context['photowps_total_sum'] = 0
+        context['photowps_total_profit'] = 0
         context['photowps_total_count_of_sales'] = 0
         for i in context['photowps']:
             try:
                 context['photowps_total_sum'] += i.sum
+                context['photowps_total_profit'] += i.profit
                 context['photowps_total_count_of_sales'] += i.count_of_sales
             except AttributeError:
                 pass
+
+        context['photowps_total_sum_w'] = 0
+        context['photowps_total_profit_w'] = 0
+        context['photowps_total_count_of_sales_w'] = 0
+        for i in context['photowps']:
+            try:
+                context['photowps_total_sum_w'] += i.sum_w
+                context['photowps_total_profit_w'] += i.profit_w
+                context['photowps_total_count_of_sales_w'] += i.count_of_sales_w
+            except AttributeError:
+                pass
+
+        ###
+        # calculate total for wallpapers
+        ###
 
         context['wps'] = OrderedDict(
             (o.pk, o) for o in TheConsignment.objects.filter(pk__in=wp_sells_ids).order_by('vendor_code__vendor_code')
@@ -170,17 +238,24 @@ def date_hierarchy(request):
             wp_sells.values('object_id') \
                 .annotate(number_of_sales=Count('id')) \
                 .annotate(count_of_sales=Sum('count')) \
-                .annotate(sum=Sum(F('count') * F('price'), output_field=IntegerField())).order_by('object_id'):
+                .annotate(sum=Sum(F('count') * F('price'), output_field=IntegerField())) \
+                .order_by('object_id'):
             wp = context['wps'][item['object_id']]
             wp.number_of_sales = item['number_of_sales']
             wp.count_of_sales = item['count_of_sales']
             wp.sum = item['sum']
             wp.profit = item['count_of_sales'] * 100
 
+        for item in wp_recs:
+            wp = context['wps'][item.object_id]
+            wp.profit = wp.sum - item.price * wp.count_of_sales
+
+        context['wps'] = [v for v in context['wps'].values()]
+
         context['wps_total_sum'] = 0
         context['wps_total_count_of_sales'] = 0
         context['wps_total_number_of_sales'] = 0
-        for i in context['wps'].values():
+        for i in context['wps']:
             try:
                 context['wps_total_sum'] += i.sum
                 context['wps_total_count_of_sales'] += i.count_of_sales
@@ -188,18 +263,17 @@ def date_hierarchy(request):
             except AttributeError:
                 pass
 
-        for item in wp_recs.values():
-            wp = context['wps'][item.object_id]
-            wp.profit = wp.sum - item.price * wp.count_of_sales
-
         context['wps_total_profit'] = 0
-        for i in context['wps'].values():
+        for i in context['wps']:
             try:
                 context['wps_total_profit'] += i.profit
             except AttributeError:
                 pass
 
-        context['wps'] = [v for v in context['wps'].values()]
+        ###
+        # calculate total for all
+        ###
+
         context['byers'] = queryset.filter(
             date_create__year=year_lookup,
             date_create__month=month_lookup
@@ -208,9 +282,14 @@ def date_hierarchy(request):
             context['glues_total_sum'],
             context['glues_total_sum_w'],
             context['photowps_total_sum'],
+            context['photowps_total_sum_w'],
             context['wps_total_sum'],
         ))
         context['profit_sum'] = sum((
+            context['glues_total_profit'],
+            context['glues_total_profit_w'],
+            context['photowps_total_profit'],
+            context['photowps_total_profit_w'],
             context['wps_total_profit'],
         ))
 
