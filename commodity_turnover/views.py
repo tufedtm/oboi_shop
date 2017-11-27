@@ -67,11 +67,7 @@ def date_hierarchy(request):
     month_field = '%s__month' % field_name
     year_lookup = params.get(year_field)
     month_lookup = params.get(month_field)
-    glue, wp, photowp = (
-        ContentType.objects.get(model='glue'),
-        ContentType.objects.get(model='theconsignment'),
-        ContentType.objects.get(model='photowp'),
-    )
+    glue, wp, photowp = ContentType.objects.filter(model__in=('glue', 'theconsignment', 'photowp'))
 
     if year_lookup and month_lookup:
         sellings = SellingContent.objects.filter(
