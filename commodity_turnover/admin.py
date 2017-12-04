@@ -31,9 +31,22 @@ class SellingInline(admin.TabularInline):
 
 @admin.register(Selling)
 class SellingAdmin(CommodityAdmin):
+    class SellingBuyerListFilter(admin.SimpleListFilter):
+        title = Contractor._meta.verbose_name
+        parameter_name = 'buyer__id__exact'
+
+        def lookups(self, request, model_admin):
+            return ((c.id, c.__str__()) for c in Contractor.objects.filter(contractor_type=False))
+
+        def queryset(self, request, queryset):
+            if self.value():
+                return queryset.filter(buyer__id__exact=self.value())
+
     date_hierarchy = 'date_create'
     fields = ('buyer', ('date_create', 'date_paid'), 'comment')
+    list_display = ('__str__', 'date_paid')
     inlines = (SellingInline,)
+    list_filter = (SellingBuyerListFilter,)
 
     def render_change_form(self, request, context, *args, **kwargs):
         context['adminform'].form.fields['buyer'].queryset = Contractor.objects.filter(contractor_type=False)

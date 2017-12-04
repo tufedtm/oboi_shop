@@ -1,3 +1,4 @@
+from calendar import monthrange
 from collections import OrderedDict
 
 from django.contrib.admin.utils import get_fields_from_path
@@ -71,11 +72,16 @@ def date_hierarchy(request):
 
     if year_lookup and month_lookup:
         sellings = SellingContent.objects.filter(
-            selling_order__date_create__year=year_lookup,
-            selling_order__date_create__month=month_lookup
+            selling_order__date_paid__year=year_lookup,
+            selling_order__date_paid__month=month_lookup
         ).select_related('selling_order__buyer')
         receipts = ReceiptContent.objects.filter(
-            receipt__date__lte=timezone.datetime(int(year_lookup), int(month_lookup) + 1, 1),
+            receipt__date__lte=timezone.datetime(
+                int(year_lookup),
+                int(month_lookup),
+                monthrange(int(year_lookup), int(month_lookup))[1],
+                23, 59, 59, 999999
+            ),
             price__gt=0
         ).select_related('content_type')
 
