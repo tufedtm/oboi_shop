@@ -155,6 +155,9 @@ class TheConsignment(models.Model):
         else:
             return '{0} [{1}] — {2}'.format(self.vendor_code, self.the_consignment, self.count)
 
+    def get_pack(self):
+        return self.vendor_code.pack
+
     def get_for_selling(self):
         return '{0} [{1}]'.format(
             self.vendor_code,

@@ -30,7 +30,7 @@ class Command(BaseCommand):
             3: [
                 {'sheet': 3, 'purchase_price': 140, 'retail_price': 800, 'wholesale_price_item': 450},
                 {'sheet': 4, 'purchase_price': 175, 'retail_price': 900, 'wholesale_price_item': 500},
-                {'sheet': 6, 'purchase_price': 630, 'retail_price': 1000, 'wholesale_price_item': 550},
+                {'sheet': 6, 'purchase_price': 230, 'retail_price': 1000, 'wholesale_price_item': 550},
                 {'sheet': 8, 'purchase_price': 280, 'retail_price': 1100, 'wholesale_price_item': 650},
                 {'sheet': 9, 'purchase_price': 300, 'retail_price': 1200, 'wholesale_price_item': 700},
                 {'sheet': 12, 'purchase_price': 410, 'retail_price': 1300, 'wholesale_price_item': 800},
