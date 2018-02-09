@@ -1,7 +1,7 @@
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 
-from commodity_turnover.models import SellingContent
+from commodity_turnover.models import ReceiptContent, SellingContent
 from .managers import VendorCodeManager, TheConsignmentManager, TheConsignmentAvailableManager
 
 
@@ -140,6 +140,7 @@ class TheConsignment(models.Model):
     showcase = models.BooleanField('На витрине?', default=True)
 
     sellings = GenericRelation(SellingContent)
+    receipts = GenericRelation(ReceiptContent)
 
     objects = TheConsignmentManager()
     availables = TheConsignmentAvailableManager()

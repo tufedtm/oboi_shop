@@ -25,7 +25,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'o27531usngo9i3(d$-1$-7v8qel26!bxspz57y*&k@xb2h)ab_'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True if socket.gethostname() in ('ttm-mint-home',) else False
+DEBUG = True #if socket.gethostname() in ('ttm-mint-home',) else False
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', '163.172.172.108']
 
@@ -87,7 +87,7 @@ DATABASES = {
         'NAME': 'evada_db',
         'USER': 'evada_user',
         'PASSWORD': 'evada_pass',
-        'HOST': '127.0.0.1',
+        'HOST': 'db',
         'PORT': '5432',
     }
 }

@@ -34,25 +34,32 @@ class SellingList(ListView):
 
 class SellingTodayList(ListView):
     template_name = 'index.html'
+    queryset = TheConsignment.objects.all()
 
-    def get_queryset(self):
-        today = timezone.now()
-
-        return SellingContent.objects.filter(
-            selling_order__date_create__year=today.year,
-            selling_order__date_create__month=today.month,
-            selling_order__date_create__day=today.day,
-        )
+    # def get_queryset(self):
+    #     today = timezone.now()
+    #
+    #     return SellingContent.objects.filter(
+    #         selling_order__date_create__year=today.year,
+    #         selling_order__date_create__month=today.month,
+    #         selling_order__date_create__day=today.day,
+    #     )
 
     def get_context_data(self, **kwargs):
         context = super(SellingTodayList, self).get_context_data(**kwargs)
 
-        context['total_sum'] = 0
-        context['wp_count'] = 0
-        for item in context['object_list']:
-            context['total_sum'] += item.get_sum()
-            if item.content_type_id == 10:
-                context['wp_count'] += item.count
+        context['wps'] = TheConsignment.objects.order_by('vendor_code__width', 'vendor_code__vendor_code', 'the_consignment')
+        context['pwps'] = PhotoWP.objects.all()
+        context['glues'] = Glue.objects.all()
+
+        # context['object_list'] = TheConsignment.objects.all()
+
+        # context['total_sum'] = 0
+        # context['wp_count'] = 0
+        # for item in context['object_list']:
+        #     context['total_sum'] += item.get_sum()
+        #     if item.content_type_id == 10:
+        #         context['wp_count'] += item.count
 
         return context
 

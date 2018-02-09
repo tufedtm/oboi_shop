@@ -18,6 +18,13 @@ class RemnantsOfGoodsView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(RemnantsOfGoodsView, self).get_context_data(**kwargs)
+
+        context['object_list'] = []
+        for i in TheConsignment.availables.filter(vendor_code__width__in=['0', '1', '1.04', '1.06']):
+            if i.receipts.all()[0].price:
+                print(i)
+                context['object_list'].append(i)
+
         receipts = dict((x.object_id, x) for x in ReceiptContent.objects.filter(content_type_id=10, price__gt=0))
 
         context['total_rolls'] = 0

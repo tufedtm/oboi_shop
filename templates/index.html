@@ -4,26 +4,165 @@
   <br><br>
   <table>
     <tr>
+      <th>Группы</th>
+      <th>Код</th>
       <th>Наименование</th>
-      <th>Кол-во</th>
-      <th>Цена</th>
-      <th>Сумма</th>
+      <th>Внешний код</th>
+      <th>Артикул</th>
+      <th>Единица измерения</th>
+      <th>Цена продажи</th>
+      <th>Валюта (Цена продажи)</th>
+      <th>Закупочная цена</th>
+      <th>Валюта (Закупочная цена)</th>
+      <th>Неснижаемый остаток</th>
+      <th>Штрихкод EAN13</th>
+      <th>Штрихкод EAN8</th>
+      <th>Штрихкод Code128</th>
+      <th>Описание</th>
+      <th>Минимальная цена</th>
+      <th>Страна</th>
+      <th>НДС</th>
+      <th>Поставщик</th>
+      <th>Остаток</th>
+      <th>Стеллаж</th>
+      <th>Ячейка</th>
+      <th>Ширина</th>
+      <th>Длина</th>
+      {#      <th>Компаньоны</th>#}
+      <th>Рулонов в коробке</th>
+      <th>Раппорт</th>
+      <th>Тип раппорта</th>
+      <th>Маркировка</th>
+      <th>Материал основы</th>
+      <th>Материал покрытия</th>
+      <th>Влагостойкость</th>
+      <th>Светостойкость</th>
+      <th>Наклеивание</th>
+      <th>Снятие со стены</th>
     </tr>
-    {% for object in object_list %}
-      <tr align="right">
-        <td align="left">{{ object.get_item.get_for_selling }}</td>
-        <td>{{ object.count }}</td>
-        <td>{{ object.price }}&#x20bd</td>
-        <td>{{ object.get_sum }}&#x20bd</td>
-        <td>{{ object.selling_order.buyer }}</td>
-        <td>{{ object.selling_order.is_paid }}</td>
+    {% for wp in wps %}
+      <tr>
+        <td>Обои/{{ wp.vendor_code.width }}</td>
+        <td></td>
+        <td>{{ wp.vendor_code.vendor_code }} {% if wp.the_consignment %}[{{ wp.the_consignment }}]{% endif %}</td>
+        <td></td>
+        <td></td>
+        <td>рул</td>
+        <td>{{ wp.retail_price }}</td>
+        <td>руб</td>
+        <td>
+          {% for receipt in wp.receipts.all %}
+            {% if receipt.price %}
+              {{ receipt.price }}
+            {% endif %}
+          {% endfor %}
+        </td>
+        <td>руб</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>
+          {% for receipt in wp.receipts.all %}
+            {{ receipt.count }}
+          {% endfor %}
+        </td>
+        <td>{% if wp.stillage %}{{ wp.stillage }}{% endif %}</td>
+        <td>{% if wp.stillage and wp.cell %}{{ wp.cell }}{% endif %}</td>
+        <td>{{ wp.vendor_code.width }}</td>
+        <td>{{ wp.vendor_code.length }}</td>
+{#        <td>#}
+{#          {% if wp.vendor_code.combination.all %}#}
+{#            {% for vc in wp.vendor_code.combination.all %}#}
+{#              {{ vc.theconsignment_set.all }}#}
+{#            {% endfor %}#}
+{##}
+{#          {% endif %}#}
+{#        </td>#}
+        <td>
+          {% if wp.vendor_code.pack %}
+            {{ wp.vendor_code.pack }}
+          {% endif %}
+        </td>
+        <td>{{ wp.vendor_code.rapport }}</td>
+        <td>
+          {% if wp.vendor_code.rapport_type %}
+            {{ wp.vendor_code.rapport_type }}
+          {% endif %}
+        </td>
+        <td>
+          {% if wp.vendor_code.marking %}
+            {{ wp.vendor_code.get_marking_display }} ({{ wp.vendor_code.marking }})
+          {% endif %}
+        </td>
+        <td>
+          {% if wp.vendor_code.basis_material %}
+            {{ wp.vendor_code.get_basis_material_display }} ({{ wp.vendor_code.basis_material }})
+          {% endif %}
+        </td>
+        <td>
+          {% if wp.vendor_code.covering_material %}
+            {{ wp.vendor_code.get_covering_material_display }} ({{ wp.vendor_code.covering_material }})
+          {% endif %}
+        </td>
+        <td>
+          {% if wp.vendor_code.moisture_resistance %}
+            {{ wp.vendor_code.get_moisture_resistance_display }} ({{ wp.vendor_code.moisture_resistance }})
+          {% endif %}
+        </td>
+        <td>
+          {% if wp.vendor_code.resistance_to_light %}
+            {{ wp.vendor_code.get_resistance_to_light_display }} ({{ wp.vendor_code.resistance_to_light }})
+          {% endif %}
+        </td>
+        <td>
+          {% if wp.vendor_code.gluing %}
+            {{ wp.vendor_code.get_gluing_display }} ({{ wp.vendor_code.gluing }})
+          {% endif %}
+        </td>
+        <td>
+          {% if wp.vendor_code.removal %}
+            {{ wp.vendor_code.get_removal_display }} ({{ wp.vendor_code.removal }})
+          {% endif %}
+        </td>
       </tr>
     {% endfor %}
-    <tr style="font-weight: 700;">
-      <td>Итого</td>
-      <td align="right">{{ wp_count }}рул</td>
-      <td></td>
-      <td>{{ total_sum }}&#x20bd</td>
-    </tr>
+
+
   </table>
+
+
+
+
+
+{##}
+{#  <table>#}
+{#    <tr>#}
+{#      <th>Наименование</th>#}
+{#      <th>Кол-во</th>#}
+{#      <th>Цена</th>#}
+{#      <th>Сумма</th>#}
+{#    </tr>#}
+{#    {% for object in object_list %}#}
+{#      <tr align="right">#}
+{#        <td align="left">{{ object.get_item.get_for_selling }}</td>#}
+{#        <td>{{ object.count }}</td>#}
+{#        <td>{{ object.price }}&#x20bd</td>#}
+{#        <td>{{ object.get_sum }}&#x20bd</td>#}
+{#        <td>{{ object.selling_order.buyer }}</td>#}
+{#        <td>{{ object.selling_order.is_paid }}</td>#}
+{#      </tr>#}
+{#    {% endfor %}#}
+{#    <tr style="font-weight: 700;">#}
+{#      <td>Итого</td>#}
+{#      <td align="right">{{ wp_count }}рул</td>#}
+{#      <td></td>#}
+{#      <td>{{ total_sum }}&#x20bd</td>#}
+{#    </tr>#}
+{#  </table>#}
 {% endblock %}
