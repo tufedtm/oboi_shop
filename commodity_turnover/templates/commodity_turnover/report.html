@@ -26,7 +26,7 @@
     </tr>
     {% for glue in glues %}
       <tr align="right">
-        <td align="left">{{ glue }}</td>
+        <td align="left">{{ glue.warehouse_str }}</td>
         <td>{{ glue.count_of_sales_w }}</td>
         <td>
           {% if glue.sum_w %}

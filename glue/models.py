@@ -48,12 +48,16 @@ class Glue(models.Model):
     availables = GlueAvailableManager()
 
     def __str__(self):
-        return '{0}'.format(
+        return '{0} — {1}'.format(
             self.warehouse_str,
+            self.count
         )
 
     def get_for_selling(self):
         return self.__str__()
+
+    def get_pack(self):
+        return self.pack
 
     def get_pack_count(self):
         if self.pack:
